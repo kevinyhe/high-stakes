@@ -11,7 +11,7 @@ namespace mechanism
     enum class IntakeState
     {
         DISABLED,
-        HOOD,
+        HOOK,
         WALL_STAKE,
         REVERSE,
         DEJAM

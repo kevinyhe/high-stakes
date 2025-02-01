@@ -32,6 +32,7 @@ void mechanism::Intake::start_task()
                 break;
             }
 
+            // TODO: test dejam
             if (this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && std::abs(motors->get_actual_velocity()) < 300 && std::abs(motors->get_voltage()) > 0)
             {
                 this->state = IntakeState::DEJAM;
@@ -43,7 +44,7 @@ void mechanism::Intake::start_task()
             
             switch (state)
             {
-            case IntakeState::HOOD: {
+            case IntakeState::HOOK: {
                 motors->move(127);
             } break;
             case IntakeState::WALL_STAKE: {

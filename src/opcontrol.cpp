@@ -14,7 +14,7 @@ void control_intake(pros::Controller controller, std::shared_ptr<mechanism::Inta
 {
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1))
     {
-        intake->set_state(mechanism::IntakeState::HOOD);
+        intake->set_state(mechanism::IntakeState::HOOK);
     }
 
     if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
@@ -64,7 +64,8 @@ void control_arm(pros::Controller controller, std::shared_ptr<mechanism::Arm> ar
 
 void opcontrol()
 {
-    while (true) {
+    while (true)
+    {
         int fwd = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int turn = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
 

@@ -7,9 +7,6 @@
 pros::MotorGroup left_drive(config::PORT_LEFT_DRIVE);
 pros::MotorGroup right_drive(config::PORT_RIGHT_DRIVE);
 
-pros::MotorGroup intake(config::PORT_INTAKE);
-pros::Motor arm_motor(config::PORT_ARM);
-
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_drive,
                               &right_drive,
@@ -18,11 +15,11 @@ lemlib::Drivetrain drivetrain(&left_drive,
                               config::DRIVE_GEAR_RATIO * 600,
                               0);
 
-std::shared_ptr<mechanism::Intake> intake = std::make_shared<mechanism::Intake>(std::make_shared<pros::MotorGroup>(intake));
+std::shared_ptr<mechanism::Intake> intake = std::make_shared<mechanism::Intake>(std::make_shared<pros::MotorGroup>(config::PORT_INTAKE));
 std::shared_ptr<mechanism::Arm> arm = std::make_shared<mechanism::Arm>(
     std::make_shared<pros::Motor>(config::PORT_ARM),
     std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION),
-    std::make_shared<mechanism::Intake>(std::make_shared<pros::MotorGroup>(intake)),
+    std::make_shared<mechanism::Intake>(std::make_shared<pros::MotorGroup>(config::PORT_INTAKE)),
     std::make_shared<PID>(config::PARAMS_ARM_PID),
     config::ARM_TARGET_CONFIG,
     config::ARM_GEAR_RATIO);
