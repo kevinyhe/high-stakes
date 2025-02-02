@@ -72,5 +72,35 @@ namespace config
     inline const double ANGULAR_SLEW = 0.0; 
 } // namespace config
 
-extern std::shared_ptr<lemlib::Drivetrain> drivetrain;
-extern std::shared_ptr<lemlib::Chassis> chassis;
+inline pros::MotorGroup left_motors = pros::MotorGroup(config::PORT_LEFT_DRIVE);
+inline pros::MotorGroup right_motors = pros::MotorGroup(config::PORT_RIGHT_DRIVE);
+
+// input curve for throttle input during driver control
+inline lemlib::ExpoDriveCurve throttle_curve(3,    // joystick deadband out of 127
+                                      10,   // minimum output where drivetrain will move out of 127
+                                      1.019 // expo curve gain
+);
+
+// input curve for steer input during driver control
+inline lemlib::ExpoDriveCurve steer_curve(3,    // joystick deadband out of 127
+                                   10,   // minimum output where drivetrain will move out of 127
+                                   1.019 // expo curve gain
+);
+
+inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, config::DRIVE_WHEEL_TRACK, config::DRIVE_WHEEL_DIAMETER, config::DRIVE_RPM, config::DRIVE_HORIZONTAL_DRIFT);
+
+inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
+inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
+inline pros::Imu imu(config::PORT_IMU);
+
+inline lemlib::OdomSensors sensors(
+    new lemlib::TrackingWheel(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE),
+    nullptr,
+    new lemlib::TrackingWheel(&lateral_rotation, config::HORIZONTAL_TRACKING_WHEEL_DIAMETER, config::HORIZONTAL_TRACKING_WHEEL_DISTANCE),
+    nullptr,
+    &imu);
+
+inline lemlib::ControllerSettings linearSettings(config::LINEAR_KP, config::LINEAR_KI, config::LINEAR_KD, config::LINEAR_WINDUP, config::LINEAR_SMALL_ERROR, config::LINEAR_SMALL_ERROR_TIMEOUT, config::LINEAR_LARGE_ERROR, config::LINEAR_LARGE_ERROR_TIMEOUT, config::LINEAR_SLEW);
+inline lemlib::ControllerSettings angularSettings(config::ANGULAR_KP, config::ANGULAR_KI, config::ANGULAR_KD, config::ANGULAR_WINDUP, config::ANGULAR_SMALL_ERROR, config::ANGULAR_SMALL_ERROR_TIMEOUT, config::ANGULAR_LARGE_ERROR, config::ANGULAR_LARGE_ERROR_TIMEOUT, config::ANGULAR_SLEW);
+
+inline std::shared_ptr<lemlib::Chassis> chassis = std::make_shared<lemlib::Chassis>(drivetrain, linearSettings, angularSettings, sensors);
