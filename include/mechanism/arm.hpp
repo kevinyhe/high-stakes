@@ -1,11 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "pros/rtos.hpp"
-
-#include "pros/rotation.hpp"
-
-#include "intake.hpp"
+#include "main.h"
 #include "controller/pid.hpp"
 
 namespace mechanism
@@ -33,10 +29,7 @@ namespace mechanism
         std::shared_ptr<pros::Motor> motors;
         std::shared_ptr<pros::Rotation> arm_rotation_sensor;
 
-        std::shared_ptr<mechanism::Intake> intake;
-
         std::shared_ptr<PID> arm_pid;
-
         ArmTargetConfig target_config;
         double kG;
 
@@ -47,44 +40,55 @@ namespace mechanism
         pros::Task task = pros::Task([]()
                                      { return; });
 
+        static std::unique_ptr<Arm> instance;
+        // Private constructor/destructor
+        explicit Arm(std::shared_ptr<pros::Motor> motors,
+            std::shared_ptr<pros::Rotation> arm_rotation_sensor,
+            std::shared_ptr<PID> arm_pid,
+            ArmTargetConfig target_config,
+            double kG);
+        Arm() = delete;
+
     public:
-        Arm(std::shared_ptr<pros::Motor> motors, std::shared_ptr<pros::Rotation> arm_rotation_sensor, std::shared_ptr<mechanism::Intake> intake, std::shared_ptr<PID> arm_pid, ArmTargetConfig arm_target_config, double kG);
+        ~Arm();
+        // disable copy/move -- this is a Singleton
+        Arm(const Arm &) = delete;
+        Arm(Arm &&) = delete;
+        Arm &operator=(const Arm &) = delete;
+        Arm &operator=(Arm &&) = delete;
 
-        /**
-         * @brief Start the task
-         */
+        // Singleton accessor
+        static void initialize(std::shared_ptr<pros::Motor> motors,
+                               std::shared_ptr<pros::Rotation> arm_rotation_sensor,
+                               std::shared_ptr<PID> arm_pid,
+                               ArmTargetConfig arm_target_config,
+                               double kG)
+        {
+            if (!instance)
+            {
+                instance = std::unique_ptr<Arm>(new Arm(motors,
+                                                        arm_rotation_sensor,
+                                                        arm_pid,
+                                                        arm_target_config,
+                                                        kG));
+            }
+        }
+
+        // Access method
+        static Arm &get_instance()
+        {
+            if (!instance)
+            {
+                throw std::runtime_error("Arm not initialized. Call initialize() first.");
+            }
+            return *instance;
+        }
+
+        // Core functionality
         void start_task();
-        /**
-         * @brief Stop the task
-         */
         void stop_task();
-
-        /**
-         * @brief Set the state of the mechanism
-         *
-         * @param state The new state
-         */
         void set_state(ArmState state);
-
-        /**
-         * @brief Get the state of the mechanism
-         *
-         * @return RingMechState The current state
-         */
         ArmState get_state();
-
-        /**
-         * @brief Whether the arm is in loading position
-         *
-         * @return bool
-         */
         bool is_loading();
-
-        // /**
-        //  * @brief Manually move the arm. Automatically sets state to DISABLED
-        //  *
-        //  * @param voltage the voltage to move at
-        //  */
-        // void move_manual(double voltage);
     };
 } // namespace mechanism
