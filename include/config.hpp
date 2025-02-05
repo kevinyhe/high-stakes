@@ -2,6 +2,8 @@
 #include "controller/pid.hpp"
 #include "mechanism/arm.hpp"
 #include "mechanism/intake.hpp"
+#include "device/pneumatic.hpp"
+#include "math/math.hpp"
 
 namespace config
 {
@@ -20,22 +22,24 @@ namespace config
     inline const std::initializer_list<int8_t> PORT_INTAKE = {9, -11};
 
     inline const int8_t PORT_ARM = 10;
-    inline const int8_t PORT_ARM_ROTATION = 0; // TODO:
+    inline const int8_t PORT_ARM_ROTATION = -20; // TODO:
 
-    inline const double ARM_GEAR_RATIO = 1.0 / 3.0; // TODO:
+    inline const char PORT_DOINKER = 'E'; // TODO:
+    inline const char PORT_INTAKE_LIFT = 'F'; // TODO:
+    inline const char PORT_CLAMP = 'G'; // TODO:
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
-        load : -44.0,
-        alliance_stake : 10.0,
-        ladder_touch : 25.0,
-        neutral_stake : 39.0
+        load : 57.5,
+        idle : 20.0,
+        ladder_touch : 140.0,
+        neutral_stake : 180.0
     };
     inline const PIDParameters PARAMS_ARM_PID = { // TODO: tune
-        kP : 5.0,
+        kP : 4.2,
         kI : 0.0,
-        kD : 1.0
+        kD : 12.0,
     };
-    inline const double ARM_kG = 10.0; // TODO:
+    inline const double ARM_kG = 9.8; // TODO:
     inline const std::shared_ptr<PID> ARM_PID = std::make_shared<PID>(PARAMS_ARM_PID);
 
     // sensors
@@ -92,6 +96,10 @@ inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, config::DRIVE_
 inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
 inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
 inline pros::Imu imu(config::PORT_IMU);
+
+inline Pneumatic clamp = Pneumatic(config::PORT_CLAMP);
+inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
+inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 
 inline lemlib::OdomSensors sensors(
     new lemlib::TrackingWheel(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE),

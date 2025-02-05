@@ -11,3 +11,5 @@
  * @return -1 for negative, 0 for zero, and 1 for positive
  */
 int sgn(double val);
+
+double normalize(const double value, const double start, const double end);

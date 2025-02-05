@@ -17,12 +17,19 @@ void initialize()
 	auto arm_motors = std::make_shared<pros::Motor>(config::PORT_ARM);
 	auto arm_rotation = std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION);
 
+	arm_motors->set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+
 	mechanism::Arm::initialize(
 		arm_motors,
 		arm_rotation,
 		config::ARM_PID,
 		config::ARM_TARGET_CONFIG,
 		config::ARM_kG);
+
+	clamp.retract();
+	doinker.retract();
+	// arm_rotation->reset();
+	arm_rotation->set_position(2000);
 }
 
 /**

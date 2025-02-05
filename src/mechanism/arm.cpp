@@ -45,43 +45,63 @@ namespace mechanism
         task_on_flag = true;
         mutex.unlock();
 
+        // arm_rotation_sensor.reset();
+
         task = pros::Task([this]()
                           {
-            while (true) {
+            auto initial_comp_status = pros::c::competition_get_status();
+            
+            while (initial_comp_status == pros::c::competition_get_status())
+            {
                 mutex.lock();
-                if (task_on_flag == false || pros::competition::is_disabled()) {
-                    mutex.unlock();
+                if (task_on_flag == false)
+                {
                     break;
                 }
                 mutex.unlock();
 
-                double current_angle = ((arm_rotation_sensor->get_position() / 100.0) - 360) / 5.0;
+                double current_angle = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
+
+                pros::lcd::print(5, "Arm: %f", current_angle);
 
                 double target_angle = INFINITY;
                 switch (state) {
-                    case ArmState::LOAD: target_angle = target_config.load; break;
-                    case ArmState::ALLIANCE_STAKE: target_angle = target_config.alliance_stake; break;
-                    case ArmState::NEUTRAL_STAKE: target_angle = target_config.neutral_stake; break;
-                    case ArmState::LADDER_TOUCH: target_angle = target_config.ladder_touch; break;
-                    default: break;
+                    case ArmState::LOAD: target_angle = target_config.load;
+                        pros::lcd::print(6, "load");
+                        break;
+                    case ArmState::IDLE:
+                        target_angle = target_config.idle;
+                        pros::lcd::print(6, "alliance stake");
+                    break;
+                    case ArmState::NEUTRAL_STAKE:
+                        target_angle = target_config.neutral_stake;
+                        pros::lcd::print(6, "neutral stake");
+                    break;
+                    case ArmState::LADDER_TOUCH: target_angle = target_config.ladder_touch;
+                        pros::lcd::print(6, "ladder touch");
+                     break;
+                    default:
+                        pros::lcd::print(6, "default");
+                    break;
                 }
 
                 // Access Intake singleton directly
                 auto& intake = Intake::get_instance();
+                pros::lcd::print(4, "Target: %f", target_angle);
 
-                if (is_loading() && intake.get_state() == IntakeState::WALL_STAKE) {
-                    motors->move(5); // holding power
-                }
-                else if (target_angle != INFINITY) {
+                if (target_angle != INFINITY) {
                     double output = arm_pid->calculate(current_angle, target_angle);
-                    double real_theta = -current_angle * config::ARM_GEAR_RATIO * M_PI / 180.0 + M_PI / 2.0; // of motor
-
-                    if (output > 50) {
-                        motors->move(output + kG * cos(real_theta));
-                    }
-                    else {
-                        motors->move(50);
-                    }
+                    pros::lcd::print(1, "output %f", output);
+                    pros::lcd::print(2, "gravity %f", kG * sin((current_angle+35) * M_PI / 180));
+                    // if (output < 50) {
+                        motors->move(output + (kG * sin((current_angle+35) * M_PI / 180)));
+                    // } else {
+                        // motors->move(127);
+                    // }
+                } 
+                // relieve stress on motors for idle position
+                if (target_angle == target_config.idle && current_angle < target_config.idle + 15) {
+                    motors->move(0);
                 }
 
                 pros::delay(20);
@@ -118,14 +138,14 @@ namespace mechanism
 
     bool mechanism::Arm::is_loading()
     {
-        double current = ((arm_rotation_sensor->get_position() / 100.0) - 360) / 5.0;
+        double current = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
 
         if (current > 180.0)
         {
             current = 0.0;
         }
 
-        return std::abs(current - target_config.load) < 3.0;
+        return std::abs(current - target_config.load) < 4;
     }
 
 } // namespace mechanism

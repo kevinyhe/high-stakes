@@ -9,7 +9,7 @@ namespace mechanism
     struct ArmTargetConfig
     {
         double load;
-        double alliance_stake;
+        double idle;
         double ladder_touch;
         double neutral_stake;
     };
@@ -18,7 +18,7 @@ namespace mechanism
     {
         DISABLED,
         LOAD,
-        ALLIANCE_STAKE,
+        IDLE,
         LADDER_TOUCH,
         NEUTRAL_STAKE
     };
