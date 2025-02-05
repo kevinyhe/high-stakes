@@ -64,6 +64,7 @@ namespace mechanism
         void start_task();
         void stop_task();
         void set_state(IntakeState state);
+        void unload();
         IntakeState get_state();
     };
 } // namespace mechanism

@@ -42,8 +42,11 @@ namespace mechanism
                     break;
                 }
 
+                // get arm instance
+                auto& arm = Arm::get_instance();
+
                 // Check if the motors are at 0 velocity
-                if (std::abs(motors->get_actual_velocity(1)) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && this->state != IntakeState::WALL_STAKE)
+                if (std::abs(motors->get_actual_velocity(1)) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && (arm.get_state() == ArmState::IDLE || arm.get_state() == ArmState::NEUTRAL_STAKE))
                 {
                     // If the motors are at 0 velocity, start or update the timer
                     if (zero_velocity_start_time == 0)
@@ -76,10 +79,11 @@ namespace mechanism
                 switch (current_state) {
                     case IntakeState::HOOK:
                         motors->move(127);
-                        pros::lcd::print(3, "hbook");
+                        pros::lcd::print(3, "hook");
                         break;
                     case IntakeState::WALL_STAKE:
-                        motors->move(127);
+                        motors->move(-50);
+                        pros::delay(200);
                         pros::lcd::print(3, "stake");
                         break;
                     case IntakeState::REVERSE:
@@ -117,6 +121,14 @@ namespace mechanism
         state = new_state;
         mutex.unlock();
     }
+
+    // void Intake::unload() {
+    //     mutex.lock();
+    //     dejam_start_time = pros::millis();
+    //     pre_dejam_state = state;
+    //     state = IntakeState::DEJAM;
+    //     mutex.unlock();
+    // }
 
     IntakeState Intake::get_state()
     {

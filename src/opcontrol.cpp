@@ -24,15 +24,6 @@ void control_intake(pros::Controller &controller)
     {
         intake.set_state(mechanism::IntakeState::REVERSE);
     }
-    else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2))
-    {
-        intake.set_state(mechanism::IntakeState::WALL_STAKE);
-
-        if (arm.get_state() != mechanism::ArmState::LOAD)
-        {
-            arm.set_state(mechanism::ArmState::LOAD);
-        }
-    }
     else
     {
         intake.set_state(mechanism::IntakeState::DISABLED);
@@ -50,7 +41,7 @@ void control_arm(pros::Controller &controller)
         {
             arm.set_state(mechanism::ArmState::NEUTRAL_STAKE);
             // intake.set_state(mechanism::IntakeState::DISABLED);
-            // intake.set_state(mechanism::IntakeState::DEJAM);
+            intake.set_state(mechanism::IntakeState::WALL_STAKE);
         }
         else
         {

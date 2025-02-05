@@ -88,8 +88,14 @@ namespace mechanism
                 // Access Intake singleton directly
                 auto& intake = Intake::get_instance();
                 pros::lcd::print(4, "Target: %f", target_angle);
-
-                if (target_angle != INFINITY) {
+                // relieve stress on motors for idle position
+                if (target_angle == target_config.idle && current_angle < target_config.idle + 15) {
+                    motors->move(0);
+                }
+                else if (target_angle == target_config.neutral_stake) {
+                    motors->move(127);
+                }
+                else if (target_angle != INFINITY) {
                     double output = arm_pid->calculate(current_angle, target_angle);
                     pros::lcd::print(1, "output %f", output);
                     pros::lcd::print(2, "gravity %f", kG * sin((current_angle+35) * M_PI / 180));
@@ -99,11 +105,6 @@ namespace mechanism
                         // motors->move(127);
                     // }
                 } 
-                // relieve stress on motors for idle position
-                if (target_angle == target_config.idle && current_angle < target_config.idle + 15) {
-                    motors->move(0);
-                }
-
                 pros::delay(20);
             } });
     }
