@@ -10,7 +10,7 @@ namespace mechanism
     {
         double load;
         double idle;
-        double ladder_touch;
+        double prime;
         double neutral_stake;
     };
 
@@ -19,7 +19,7 @@ namespace mechanism
         DISABLED,
         LOAD,
         IDLE,
-        LADDER_TOUCH,
+        PRIME,
         NEUTRAL_STAKE
     };
 
@@ -90,5 +90,6 @@ namespace mechanism
         void set_state(ArmState state);
         ArmState get_state();
         bool is_loading();
+        bool is_primed();
     };
 } // namespace mechanism

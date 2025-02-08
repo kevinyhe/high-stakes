@@ -21,6 +21,7 @@ namespace mechanism
         IntakeState state = IntakeState::DISABLED;
         double dejam_start_time = 0;
         double zero_velocity_start_time = 0;
+        double wall_stake_start_time = 0;
         IntakeState pre_dejam_state = IntakeState::DISABLED;
         pros::Mutex mutex;
         bool task_on_flag = false;

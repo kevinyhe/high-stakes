@@ -49,9 +49,7 @@ namespace mechanism
 
         task = pros::Task([this]()
                           {
-            auto initial_comp_status = pros::c::competition_get_status();
-            
-            while (initial_comp_status == pros::c::competition_get_status())
+            while (true)
             {
                 mutex.lock();
                 if (task_on_flag == false)
@@ -62,32 +60,24 @@ namespace mechanism
 
                 double current_angle = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
 
-                pros::lcd::print(5, "Arm: %f", current_angle);
-
                 double target_angle = INFINITY;
                 switch (state) {
                     case ArmState::LOAD: target_angle = target_config.load;
-                        pros::lcd::print(6, "load");
                         break;
                     case ArmState::IDLE:
                         target_angle = target_config.idle;
-                        pros::lcd::print(6, "alliance stake");
                     break;
                     case ArmState::NEUTRAL_STAKE:
                         target_angle = target_config.neutral_stake;
-                        pros::lcd::print(6, "neutral stake");
                     break;
-                    case ArmState::LADDER_TOUCH: target_angle = target_config.ladder_touch;
-                        pros::lcd::print(6, "ladder touch");
+                    case ArmState::PRIME: target_angle = target_config.prime;
                      break;
                     default:
-                        pros::lcd::print(6, "default");
                     break;
                 }
 
                 // Access Intake singleton directly
                 auto& intake = Intake::get_instance();
-                pros::lcd::print(4, "Target: %f", target_angle);
                 // relieve stress on motors for idle position
                 if (target_angle == target_config.idle && current_angle < target_config.idle + 15) {
                     motors->move(0);
@@ -97,8 +87,6 @@ namespace mechanism
                 }
                 else if (target_angle != INFINITY) {
                     double output = arm_pid->calculate(current_angle, target_angle);
-                    pros::lcd::print(1, "output %f", output);
-                    pros::lcd::print(2, "gravity %f", kG * sin((current_angle+35) * M_PI / 180));
                     // if (output < 50) {
                         motors->move(output + (kG * sin((current_angle+35) * M_PI / 180)));
                     // } else {
@@ -147,6 +135,13 @@ namespace mechanism
         }
 
         return std::abs(current - target_config.load) < 4;
+    }
+
+    bool mechanism::Arm::is_primed()
+    {
+        double current = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
+
+        return std::abs(current - target_config.prime) < 15;
     }
 
 } // namespace mechanism
