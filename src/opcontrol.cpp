@@ -42,18 +42,20 @@ void control_arm(pros::Controller &controller)
             intake.set_state(mechanism::IntakeState::WALL_STAKE);
             arm.set_state(mechanism::ArmState::NEUTRAL_STAKE);
         }
-        else {
+        else
+        {
             arm.set_state(mechanism::ArmState::LOAD);
         }
     }
-    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP)) {
+    else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
+    {
         intake.set_state(mechanism::IntakeState::WALL_STAKE);
         arm.set_state(mechanism::ArmState::PRIME);
     }
     else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2))
-        {
-            arm.set_state(mechanism::ArmState::IDLE);
-        }
+    {
+        arm.set_state(mechanism::ArmState::IDLE);
+    }
 
     // increase config::ARM_kP and config::ARM_kD
 }
@@ -92,7 +94,7 @@ void opcontrol()
         int fwd = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int turn = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 
-        chassis.arcade(fwd, turn);
+        chassis->arcade(fwd, turn);
 
         control_arm(controller);
         control_intake(controller);

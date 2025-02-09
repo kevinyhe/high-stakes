@@ -1,5 +1,6 @@
 #include "main.h"
 #include "config.hpp"
+#include "mcl/mcl.hpp"
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -31,20 +32,54 @@ void initialize()
 	// arm_rotation->reset();
 	arm_rotation->set_position(2000);
 
-	chassis.calibrate(); // calibrate sensors
+	chassis->calibrate(); // calibrate sensors
 
 	pros::Task screenTask([&]()
 						  {
         while (true) {
             // print robot location to the brain screen	
-            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+            pros::lcd::print(0, "X: %f", chassis->getPose().x); // x
+            pros::lcd::print(1, "Y: %f", chassis->getPose().y); // y
+            pros::lcd::print(2, "Theta: %f", chassis->getPose().theta); // heading
             // log position telemetry
-            lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
+            lemlib::telemetrySink()->info("Chassis pose: {}", chassis->getPose());
             // delay to save resources
             pros::delay(50);
         } });
+
+	// busted
+	MCLOdom mcl_odom = MCLOdom({.particle_count = 2000,
+								.uniform_random_percent = 0.1, // this randomness prevents the system from getting stuck in a bad guess
+								.tracker_odom_sd = 0.05},
+							   chassis,
+							   {{
+									// front
+									.port = 1,
+									.x_offset = -5.5,
+									.y_offset = 7,
+									.theta_offset = 0,
+								},
+								{
+									// back
+									.port = 1,
+									.x_offset = -5.5,
+									.y_offset = -5.5,
+									.theta_offset = M_PI,
+								},
+								{
+									// left
+									.port = 1,
+									.x_offset = -5.25,
+									.y_offset = -3,
+									.theta_offset = M_PI / 2.0,
+								},
+								{
+									// right
+									.port = 1,
+									.x_offset = 7,
+									.y_offset = -5,
+									.theta_offset = -M_PI / 2.0,
+								}});
 }
 
 /**

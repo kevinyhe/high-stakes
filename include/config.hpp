@@ -1,9 +1,14 @@
+#pragma once
+
 #include "main.h"
 #include "controller/pid.hpp"
 #include "mechanism/arm.hpp"
 #include "mechanism/intake.hpp"
 #include "device/pneumatic.hpp"
 #include "math/math.hpp"
+#include "math/vector.hpp"
+#include "math/angle.hpp"
+#include "math/pose.hpp"
 
 namespace config
 {
@@ -111,7 +116,7 @@ inline lemlib::OdomSensors sensors(
 inline lemlib::ControllerSettings linearSettings(config::LINEAR_KP, config::LINEAR_KI, config::LINEAR_KD, config::LINEAR_WINDUP, config::LINEAR_SMALL_ERROR, config::LINEAR_SMALL_ERROR_TIMEOUT, config::LINEAR_LARGE_ERROR, config::LINEAR_LARGE_ERROR_TIMEOUT, config::LINEAR_SLEW);
 inline lemlib::ControllerSettings angularSettings(config::ANGULAR_KP, config::ANGULAR_KI, config::ANGULAR_KD, config::ANGULAR_WINDUP, config::ANGULAR_SMALL_ERROR, config::ANGULAR_SMALL_ERROR_TIMEOUT, config::ANGULAR_LARGE_ERROR, config::ANGULAR_LARGE_ERROR_TIMEOUT, config::ANGULAR_SLEW);
 
-inline lemlib::Chassis chassis(drivetrain, linearSettings, angularSettings, sensors);
+inline std::shared_ptr<lemlib::Chassis> chassis = std::make_shared<lemlib::Chassis>(drivetrain, linearSettings, angularSettings, sensors);
 
 // 358.29
 // 357.80
