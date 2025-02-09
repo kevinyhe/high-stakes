@@ -77,7 +77,7 @@ void control_clamp(pros::Controller controller)
 
 void control_doinker(pros::Controller controller)
 {
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT))
     {
         doinker.toggle();
     }

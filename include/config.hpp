@@ -61,7 +61,7 @@ namespace config
     inline const double LINEAR_SMALL_ERROR = 0.5;
     inline const double LINEAR_SMALL_ERROR_TIMEOUT = 100;
     inline const double LINEAR_LARGE_ERROR = 2.5; 
-    inline const double LINEAR_LARGE_ERROR_TIMEOUT = 1000; 
+    inline const double LINEAR_LARGE_ERROR_TIMEOUT = 500; 
     inline const double LINEAR_SLEW = 0.0; 
 
     inline double ANGULAR_KP = 3.6; 
