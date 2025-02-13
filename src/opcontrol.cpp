@@ -62,16 +62,24 @@ void control_arm(pros::Controller &controller)
 
 void control_clamp(pros::Controller controller)
 {
+    auto &clamp = mechanism::Clamp::get_instance();
+
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+    {
+        clamp.set_autoclamp(!clamp.get_autoclamp());
+    }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y))
     {
         clamp.toggle();
-
+        
         if (!clamp.get_value())
         {
+            controller.rumble("-");
             controller.print(0, 0, "CLAMP ON ");
         }
         else
         {
+            controller.rumble(".");
             controller.print(0, 0, "CLAMP OFF");
         }
     }
@@ -88,6 +96,9 @@ void control_doinker(pros::Controller controller)
 void opcontrol()
 {
     pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+    auto &intake = mechanism::Intake::get_instance();
+    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
 
     while (true)
     {

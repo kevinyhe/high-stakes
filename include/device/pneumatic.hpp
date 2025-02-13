@@ -17,8 +17,6 @@ public:
   virtual bool get_value() = 0;
 };
 
-#ifndef METRO_MOCK_DEVICES_ONLY
-
 class Pneumatic : public IPneumatic {
 private:
   int extender_port;
@@ -139,7 +137,6 @@ public:
   std::vector<bool> get_all_values();
 };
 
-#endif
 
 class MockPneumatic : public IPneumatic {
 private:

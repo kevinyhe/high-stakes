@@ -14,15 +14,17 @@ namespace mechanism
         REVERSE,
         DEJAM
     };
-    enum class RingColors
-    {
-        NONE,
-        RED,
-        BLUE,
-    };
 
     class Intake
     {
+    public:
+        enum class RingColours
+        {
+            NONE,
+            RED,
+            BLUE,
+        };
+
     private:
         std::shared_ptr<pros::MotorGroup> motors;
         std::shared_ptr<pros::Optical> m_optical_sensor;
@@ -33,10 +35,10 @@ namespace mechanism
         double m_blue_bound;
 
         bool m_sort_enabled;
-        RingColors m_sort_colour;
-        std::vector<RingColors> m_possession = {};
+        RingColours m_sort_colour;
+        std::vector<RingColours> m_possession = {};
 
-        ChangeDetector<RingColors> m_colour_state_detector;
+        ChangeDetector<RingColours> m_colour_state_detector;
         ChangeDetector<bool> m_ring_state_detector;
 
         IntakeState state = IntakeState::DISABLED;
@@ -53,12 +55,12 @@ namespace mechanism
         static std::once_flag init_flag;
 
         // private constructor/destructor
-        explicit Intake(std::shared_ptr<pros::MotorGroup> motors);
+        explicit Intake(std::shared_ptr<pros::MotorGroup> motors, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound);
         Intake() = delete;
 
     public:
         ~Intake(); // If the singleton is implemented as a variable at global scope, it must have a public destructor
-                   // Only public members are accessible at global scope
+        // Only public members are accessible at global scope
 
         // delete copy/move operations
         Intake(const Intake &) = delete;
@@ -77,19 +79,21 @@ namespace mechanism
         }
 
         // initialization function, call this once to create the instance
-        static void initialize(std::shared_ptr<pros::MotorGroup> motors)
+        static void initialize(std::shared_ptr<pros::MotorGroup> motors, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound)
         {
             std::call_once(init_flag, [&]()
-                           { instance.reset(new Intake(motors)); });
+                           { instance.reset(new Intake(motors, optical_sensor, distance_sensor, sort_distance, red_bound, blue_bound)); });
         }
 
-        void enable_sort(RingColors sortColor);
+        void enable_sort(RingColours sortColor);
         void disable_sort();
 
-        RingColors get_sort_colour();
-        RingColors get_current_ring_colour();
+        RingColours get_sort_colour();
+        RingColours get_current_ring_colour();
         double get_possession_count();
-        std::vector<RingColors> get_possession();
+        std::vector<RingColours> get_possession();
+
+        void stop_next_ring();
 
         void start_task();
         void stop_task();

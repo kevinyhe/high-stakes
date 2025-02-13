@@ -13,7 +13,10 @@ void initialize()
 	pros::lcd::initialize();
 
 	auto intake_motors = std::make_shared<pros::MotorGroup>(config::PORT_INTAKE);
-	mechanism::Intake::initialize(intake_motors);
+	auto intake_optical = std::make_shared<pros::Optical>(config::PORT_RING_SORT_OPTICAL);
+	auto intake_distance = std::make_shared<pros::Distance>(config::PORT_RING_SORT_DISTANCE);
+
+	mechanism::Intake::initialize(intake_motors, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
 
 	auto arm_motors = std::make_shared<pros::Motor>(config::PORT_ARM);
 	auto arm_rotation = std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION);
@@ -27,8 +30,11 @@ void initialize()
 		config::ARM_TARGET_CONFIG,
 		config::ARM_kG);
 
-	clamp.retract();
-	doinker.retract();
+	mechanism::Clamp::initialize(
+		std::make_shared<Pneumatic>(config::PORT_CLAMP),
+		std::make_shared<pros::Distance>(config::PORT_CLAMP_DISTANCE),
+		config::AUTOCLAMP_THRESHOLD);
+
 	// arm_rotation->reset();
 	arm_rotation->set_position(2000);
 
@@ -48,38 +54,38 @@ void initialize()
         } });
 
 	// busted
-	MCLOdom mcl_odom = MCLOdom({.particle_count = 2000,
-								.uniform_random_percent = 0.1, // this randomness prevents the system from getting stuck in a bad guess
-								.tracker_odom_sd = 0.05},
-							   chassis,
-							   {{
-									// front
-									.port = 1,
-									.x_offset = -5.5,
-									.y_offset = 7,
-									.theta_offset = 0,
-								},
-								{
-									// back
-									.port = 1,
-									.x_offset = -5.5,
-									.y_offset = -5.5,
-									.theta_offset = M_PI,
-								},
-								{
-									// left
-									.port = 1,
-									.x_offset = -5.25,
-									.y_offset = -3,
-									.theta_offset = M_PI / 2.0,
-								},
-								{
-									// right
-									.port = 1,
-									.x_offset = 7,
-									.y_offset = -5,
-									.theta_offset = -M_PI / 2.0,
-								}});
+// 	MCLOdom mcl_odom = MCLOdom({.particle_count = 2000,
+// 								.uniform_random_percent = 0.1, // this randomness prevents the system from getting stuck in a bad guess
+// 								.tracker_odom_sd = 0.05},
+// 							   chassis,
+// 							   {{
+// 									// front
+// 									.port = 1,
+// 									.x_offset = -5.5,
+// 									.y_offset = 7,
+// 									.theta_offset = 0,
+// 								},
+// 								{
+// 									// back
+// 									.port = 1,
+// 									.x_offset = -5.5,
+// 									.y_offset = -5.5,
+// 									.theta_offset = M_PI,
+// 								},
+// 								{
+// 									// left
+// 									.port = 1,
+// 									.x_offset = -5.25,
+// 									.y_offset = -3,
+// 									.theta_offset = M_PI / 2.0,
+// 								},
+// 								{
+// 									// right
+// 									.port = 1,
+// 									.x_offset = 7,
+// 									.y_offset = -5,
+// 									.theta_offset = -M_PI / 2.0,
+// 								}});
 }
 
 /**

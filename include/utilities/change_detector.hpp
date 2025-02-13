@@ -17,7 +17,7 @@ public: // Constructor
      * @brief Construct a new Change Detector
      *
      */
-    ChangeDetector(T initalValue = 0) : value(), changed(false) {}
+    ChangeDetector(T initalValue=0) : value(), changed(false) {}
 
     /**
      * @brief Returns whether a value has changed

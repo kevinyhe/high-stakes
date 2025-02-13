@@ -4,6 +4,7 @@
 #include "controller/pid.hpp"
 #include "mechanism/arm.hpp"
 #include "mechanism/intake.hpp"
+#include "mechanism/clamp.hpp"
 #include "device/pneumatic.hpp"
 #include "math/math.hpp"
 #include "math/vector.hpp"
@@ -34,15 +35,15 @@ namespace config
     inline const char PORT_CLAMP = 'G'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
-        load : 55.0,
+        load : 54.5,
         idle : 20.0,
         prime : 90.0,
         neutral_stake : 175.0
     };
     inline const PIDParameters PARAMS_ARM_PID = {
-        kP : 4.2,
+        kP : 5.2,
         kI : 0.0,
-        kD : 12.0,
+        kD : 15.0,
     };
     inline const double ARM_kG = 9.8;
     inline const std::shared_ptr<PID> ARM_PID = std::make_shared<PID>(PARAMS_ARM_PID);
@@ -79,6 +80,16 @@ namespace config
     inline const double ANGULAR_LARGE_ERROR = 2.5; 
     inline const double ANGULAR_LARGE_ERROR_TIMEOUT = 1000; 
     inline const double ANGULAR_SLEW = 0.0; 
+
+    inline const int8_t PORT_RING_SORT_OPTICAL = 20;
+    inline const int8_t PORT_RING_SORT_DISTANCE = 7;
+
+    inline const int8_t PORT_CLAMP_DISTANCE = 17;
+    inline const double AUTOCLAMP_THRESHOLD = 31;
+
+    inline const double SORT_DISTANCE = 30;
+    inline const double RED_BOUND = 35;
+    inline const double BLUE_BOUND = 160;
 } // namespace config
 
 inline pros::MotorGroup left_motors = pros::MotorGroup(config::PORT_LEFT_DRIVE, pros::MotorGearset::blue);
@@ -102,7 +113,6 @@ inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
 inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
 inline pros::Imu imu(config::PORT_IMU);
 
-inline Pneumatic clamp = Pneumatic(config::PORT_CLAMP);
 inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 

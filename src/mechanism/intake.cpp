@@ -6,8 +6,8 @@ namespace mechanism
     std::unique_ptr<Intake> Intake::instance = nullptr;
     std::once_flag Intake::init_flag;
 
-    Intake::Intake(std::shared_ptr<pros::MotorGroup> motors)
-        : motors(motors)
+    Intake::Intake(std::shared_ptr<pros::MotorGroup> motors, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound)
+        : motors(motors), m_optical_sensor(optical_sensor), m_distance_sensor(distance_sensor), m_sort_distance(sort_distance), m_red_bound(red_bound), m_blue_bound(blue_bound), m_sort_enabled(false), m_sort_colour(RingColours::NONE), m_colour_state_detector(RingColours::NONE), m_ring_state_detector()
     {
         start_task();
     }
@@ -17,7 +17,7 @@ namespace mechanism
         stop_task();
     }
 
-    void Intake::enable_sort(RingColors colour)
+    void Intake::enable_sort(RingColours colour)
     {
         m_optical_sensor->set_integration_time(20); // Decrease Update time
 
@@ -31,8 +31,8 @@ namespace mechanism
         m_sort_enabled = false; // Disable sort
     }
 
-    RingColors Intake::get_sort_colour() { return m_sort_colour; }
-    RingColors Intake::get_current_ring_colour()
+    Intake::RingColours Intake::get_sort_colour() { return m_sort_colour; }
+    Intake::RingColours Intake::get_current_ring_colour()
     {
         if (m_possession.size() > 0)
         {
@@ -40,12 +40,12 @@ namespace mechanism
         }
         else
         {
-            return RingColors::NONE;
+            return RingColours::NONE;
         }
     }
 
     double Intake::get_possession_count() { return m_possession.size(); }
-    std::vector<RingColors> Intake::get_possession() { return m_possession; }
+    std::vector<Intake::RingColours> Intake::get_possession() { return m_possession; }
 
     void Intake::start_task()
     {
@@ -76,27 +76,27 @@ namespace mechanism
                     m_optical_sensor->set_led_pwm(100);         // Turn on LED
                     double color = m_optical_sensor->get_hue(); // Grab Color from sensor
                     int proximity = m_optical_sensor->get_proximity();
-                    RingColors ringColor;
+                    RingColours ring_colour;
 
                     // Calculate Current Ring Color
                     if (color < m_red_bound && proximity > 180)
                     {
-                        ringColor = RingColors::RED;
+                        ring_colour = RingColours::RED;
                     }
                     else if (color > m_blue_bound && proximity > 180)
                     {
-                        ringColor = RingColors::BLUE;
+                        ring_colour = RingColours::BLUE;
                     }
                     else
                     {
-                        ringColor = RingColors::NONE;
+                        ring_colour = RingColours::NONE;
                     }
 
                     // Check if color changed
-                    m_colour_state_detector.check(ringColor);
+                    m_colour_state_detector.check(ring_colour);
                     if (m_colour_state_detector.getChanged())
                     {
-                        if (m_colour_state_detector.getValue() != RingColors::NONE) // If color is not none
+                        if (m_colour_state_detector.getValue() == m_sort_colour) // if colour is sorted colour
                         {
                             m_possession.push_back(m_colour_state_detector.getValue()); // Add new ring to possession
                         }
@@ -112,7 +112,13 @@ namespace mechanism
                         // If sort is active and color is wrong, remove ring
                         if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
+                            pros::delay(25);
+                            pros::lcd::print(7, "jews detected");
+
                             // m_pSort->extend();
+                            this->dejam_start_time = pros::millis();
+                            this->pre_dejam_state = this->state;
+                            this->state = IntakeState::DEJAM;
                         }
                         if (m_possession.size() > 0)
                         {
@@ -122,13 +128,10 @@ namespace mechanism
                     // If ring state has changed to nothing detected
                     else if (m_ring_state_detector.getChanged() && !m_ring_state_detector.getValue())
                     {
-                        // if the pneumatic is extened, retract it
-                        // if (m_pSort->is_extended())
-                        // {
-                        //     pros::delay(100);
-                        //     m_pSort->retract();
-                        // }
+                        pros::lcd::print(7, "nothing detected");
+                        // do nothing
                     }
+                    pros::lcd::print(5, "%d", m_possession.size());
                 }
                 else if (!m_sort_enabled)
                 {
@@ -161,7 +164,7 @@ namespace mechanism
                 }
 
                 // If jammed for a certain amount of time return to initial state
-                if (this->state == IntakeState::DEJAM && pros::millis() - this->dejam_start_time > 500)
+                if (this->state == IntakeState::DEJAM && pros::millis() - this->dejam_start_time > 200)
                 {
                     this->state = this->pre_dejam_state; // return to initial state
                 }
@@ -191,7 +194,7 @@ namespace mechanism
                         pros::lcd::print(6, "HOOK");
                         break;
                     case IntakeState::WALL_STAKE:
-                        motors->move(-25);
+                        motors->move(-40);
                         pros::lcd::print(6, "WALL_STAKE");
                         break;
                     case IntakeState::REVERSE:
@@ -199,7 +202,7 @@ namespace mechanism
                         pros::lcd::print(6, "REVERSE");
                         break;
                     case IntakeState::DEJAM:
-                        motors->move(-90);
+                        motors->move(-127);
                         pros::lcd::print(6, "DEJAM");
                         break;
                     case IntakeState::DISABLED:
@@ -210,6 +213,20 @@ namespace mechanism
 
                 pros::delay(20);
             } });
+    }
+
+    void Intake::stop_next_ring() {
+        pros::Task([this]() {
+            while (true) {
+                mutex.lock();
+                if (m_ring_state_detector.getChanged() && m_ring_state_detector.getValue())
+                {
+                    this->state == IntakeState::DISABLED;
+                }
+                mutex.unlock();
+                pros::delay(20);
+            }
+        }).remove();
     }
 
     void Intake::stop_task()
@@ -229,14 +246,6 @@ namespace mechanism
         state = new_state;
         mutex.unlock();
     }
-
-    // void Intake::unload() {
-    //     mutex.lock();
-    //     dejam_start_time = pros::millis();
-    //     pre_dejam_state = state;
-    //     state = IntakeState::DEJAM;
-    //     mutex.unlock();
-    // }
 
     IntakeState Intake::get_state()
     {
