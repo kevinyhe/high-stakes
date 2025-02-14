@@ -25,6 +25,7 @@ namespace config
 
 
     // subsystems
+    inline const char PORT_POTENTIOMETER = 'H';
     inline const std::initializer_list<int8_t> PORT_INTAKE = {9, -11};
 
     inline const int8_t PORT_ARM = 10;
@@ -127,6 +128,9 @@ inline lemlib::ControllerSettings linearSettings(config::LINEAR_KP, config::LINE
 inline lemlib::ControllerSettings angularSettings(config::ANGULAR_KP, config::ANGULAR_KI, config::ANGULAR_KD, config::ANGULAR_WINDUP, config::ANGULAR_SMALL_ERROR, config::ANGULAR_SMALL_ERROR_TIMEOUT, config::ANGULAR_LARGE_ERROR, config::ANGULAR_LARGE_ERROR_TIMEOUT, config::ANGULAR_SLEW);
 
 inline std::shared_ptr<lemlib::Chassis> chassis = std::make_shared<lemlib::Chassis>(drivetrain, linearSettings, angularSettings, sensors);
+
+inline pros::Controller controller(pros::E_CONTROLLER_MASTER);
+inline pros::adi::Potentiometer potentiometer(config::PORT_POTENTIOMETER, pros::adi_potentiometer_type_e::E_ADI_POT_V2);
 
 // 358.29
 // 357.80

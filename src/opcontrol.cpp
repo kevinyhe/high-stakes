@@ -95,8 +95,6 @@ void control_doinker(pros::Controller controller)
 
 void opcontrol()
 {
-    pros::Controller controller(pros::E_CONTROLLER_MASTER);
-
     auto &intake = mechanism::Intake::get_instance();
     intake.enable_sort(mechanism::Intake::RingColours::BLUE);
 
