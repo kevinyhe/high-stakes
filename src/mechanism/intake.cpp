@@ -167,6 +167,7 @@ namespace mechanism
                 if (this->state == IntakeState::DEJAM && pros::millis() - this->dejam_start_time > 200)
                 {
                     this->state = this->pre_dejam_state; // return to initial state
+                    this->dejam_start_time = 0; // reset
                 }
                 
                 // if the arm is in the wall stake position, return to initial state after a certain amount of time

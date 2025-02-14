@@ -46,12 +46,19 @@ namespace mechanism
                 {
                     if (m_distance->get() < m_autoclamp_threshold)
                     {
-                        m_pneumatic->extend();
-                        this->m_is_clamped = true;
+                        pros::lcd::print(4, "clamping");
+                        if (m_autoclamp_start_time == 0) {
+                            m_autoclamp_start_time = pros::millis();
+                        }
+                        if (pros::millis() - m_autoclamp_start_time > 200 && m_autoclamp_start_time != 0)
+                        {
+                            m_pneumatic->extend();
+                            m_autoclamp_start_time = 0;
+                        }
                     }
                     else {
                         pros::lcd::print(4, "no clamping");
-                        this->m_is_clamped = false;
+                        m_autoclamp_start_time = 0;
                     }
                 }
                 mutex.unlock();
@@ -99,13 +106,6 @@ namespace mechanism
     bool Clamp::get_value() {
         mutex.lock();
         bool temp = this->m_pneumatic->get_value();
-        mutex.unlock();
-        return temp;
-    }
-
-    bool Clamp::is_clamped() {
-        mutex.lock();
-        bool temp = this->m_is_clamped;
         mutex.unlock();
         return temp;
     }

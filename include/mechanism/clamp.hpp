@@ -14,6 +14,8 @@ namespace mechanism
         bool m_autoclamp = false;
         double m_autoclamp_threshold;
 
+        double m_autoclamp_start_time = 0;
+
         bool m_is_clamped = false;
 
         pros::Mutex mutex;

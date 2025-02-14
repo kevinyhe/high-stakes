@@ -59,9 +59,9 @@ namespace config
     inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = -0.5; // TODO:
 
     // PID
-    inline const double LINEAR_KP = 5.0; 
+    inline const double LINEAR_KP = 7.0; 
     inline const double LINEAR_KI = 0.0; 
-    inline const double LINEAR_KD = 2.0; 
+    inline const double LINEAR_KD = 10.0; 
 
     inline const double LINEAR_WINDUP = 0.0; 
     inline const double LINEAR_SMALL_ERROR = 0.5;
@@ -70,12 +70,12 @@ namespace config
     inline const double LINEAR_LARGE_ERROR_TIMEOUT = 500; 
     inline const double LINEAR_SLEW = 0.0; 
 
-    inline double ANGULAR_KP = 3.6; 
+    inline double ANGULAR_KP = 2.8; 
     inline double ANGULAR_KI = 0.0; 
-    inline double ANGULAR_KD = 11.0; 
+    inline double ANGULAR_KD = 9.0; 
 
     inline const double ANGULAR_WINDUP = 0.0; 
-    inline const double ANGULAR_SMALL_ERROR = 0.5; 
+    inline const double ANGULAR_SMALL_ERROR = 1.2; 
     inline const double ANGULAR_SMALL_ERROR_TIMEOUT = 200; 
     inline const double ANGULAR_LARGE_ERROR = 2.5; 
     inline const double ANGULAR_LARGE_ERROR_TIMEOUT = 1000; 
@@ -85,7 +85,7 @@ namespace config
     inline const int8_t PORT_RING_SORT_DISTANCE = 7;
 
     inline const int8_t PORT_CLAMP_DISTANCE = 17;
-    inline const double AUTOCLAMP_THRESHOLD = 31;
+    inline const double AUTOCLAMP_THRESHOLD = 32;
 
     inline const double SORT_DISTANCE = 30;
     inline const double RED_BOUND = 35;
