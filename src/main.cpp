@@ -109,40 +109,40 @@ void disabled() {
 int prev_pot_range = 0;
 
 void competition_initialize() {
-	while (pros::competition::is_disabled()) {
-		// get the potentiometer value
-		int pot_value = potentiometer.get_value();
-		// depending on which auton is selected, run the corresponding function
-		// get one of 8 ranges from potentiometer
-		int pot_range = std::floor(pot_value / 45);
-		int prev_pot_range = pot_range;
+	// while (pros::competition::is_disabled()) {
+	// 	// get the potentiometer value
+	// 	int pot_value = potentiometer.get_value();
+	// 	// depending on which auton is selected, run the corresponding function
+	// 	// get one of 8 ranges from potentiometer
+	// 	int pot_range = std::floor(pot_value / 45);
+	// 	int prev_pot_range = pot_range;
 	
-		if (prev_pot_range != pot_range) {
-			controller.rumble(".");
-		}
+	// 	if (prev_pot_range != pot_range) {
+	// 		controller.rumble(".");
+	// 	}
 	
-		switch (pot_range)
-		{
-		case 0:
-			controller.print(0, 0, "Red Mogo");
-			break;
-		case 1:
-			controller.print(0, 0, "Blue Mogo");
-			break;
-		case 2:
-			controller.print(0, 0, "Red Ring");
-			break;
-		case 3:
-			controller.print(0, 0, "Blue Ring");
-			break;
-		case 4:
-			controller.print(0, 0, "Prog Skills");
-			break;
-		case 5:
-			controller.print(0, 0, "Default");
-			break;
-		default:
-			break;
-		}
-	}
+	// 	switch (pot_range)
+	// 	{
+	// 	case 0:
+	// 		controller.print(0, 0, "Red Mogo");
+	// 		break;
+	// 	case 1:
+	// 		controller.print(0, 0, "Blue Mogo");
+	// 		break;
+	// 	case 2:
+	// 		controller.print(0, 0, "Red Ring");
+	// 		break;
+	// 	case 3:
+	// 		controller.print(0, 0, "Blue Ring");
+	// 		break;
+	// 	case 4:
+	// 		controller.print(0, 0, "Prog Skills");
+	// 		break;
+	// 	case 5:
+	// 		controller.print(0, 0, "Default");
+	// 		break;
+	// 	default:
+	// 		break;
+	// 	}
+	// }
 }

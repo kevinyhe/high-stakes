@@ -30,9 +30,10 @@ void red_mogo()
         pros::delay(20);
     }
     chassis->cancelMotion();
+    clamp.extend();
     intake.set_state(mechanism::IntakeState::HOOK);
     chassis->moveToPoint(-11, -37, 3000, {.forwards = false, .maxSpeed = 80, .minSpeed = 30, .earlyExitRange = 6});
-
+    
     // bottom ring
     chassis->moveToPoint(-27, -53, 2000, {.minSpeed = 40, .earlyExitRange = 3});
     
@@ -41,7 +42,7 @@ void red_mogo()
     clamp.set_autoclamp(false);
     clamp.retract();
     intake.set_state(mechanism::IntakeState::DISABLED);
-
+    
     chassis->moveToPoint(-16, -21, 3000, {.forwards = false, .maxSpeed = 70});
     clamp.set_autoclamp(true);
     while (chassis->isInMotion() && !clamp.get_value())
@@ -49,6 +50,7 @@ void red_mogo()
         pros::delay(20);
     }
     chassis->cancelMotion();
+    clamp.extend();
     pros::delay(200);
 
     chassis->moveToPose(-8.509, -8.57, 45, 2000);

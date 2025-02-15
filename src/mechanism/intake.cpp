@@ -112,7 +112,7 @@ namespace mechanism
                         // If sort is active and color is wrong, remove ring
                         if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
-                            pros::delay(25);
+                            pros::delay(40);
                             pros::lcd::print(7, "jews detected");
 
                             // m_pSort->extend();

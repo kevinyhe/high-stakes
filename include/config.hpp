@@ -36,7 +36,7 @@ namespace config
     inline const char PORT_CLAMP = 'G'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
-        load : 54.5,
+        load : 56.0,
         idle : 20.0,
         prime : 90.0,
         neutral_stake : 175.0
@@ -57,7 +57,7 @@ namespace config
     inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2;
     inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = 0.5; // TODO:
     inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 2;
-    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = -0.5; // TODO:
+    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 0.5; // TODO:
 
     // PID
     inline const double LINEAR_KP = 7.0; 
@@ -86,7 +86,7 @@ namespace config
     inline const int8_t PORT_RING_SORT_DISTANCE = 7;
 
     inline const int8_t PORT_CLAMP_DISTANCE = 17;
-    inline const double AUTOCLAMP_THRESHOLD = 32;
+    inline const double AUTOCLAMP_THRESHOLD = 28;
 
     inline const double SORT_DISTANCE = 30;
     inline const double RED_BOUND = 35;

@@ -50,7 +50,7 @@ namespace mechanism
                         if (m_autoclamp_start_time == 0) {
                             m_autoclamp_start_time = pros::millis();
                         }
-                        if (pros::millis() - m_autoclamp_start_time > 200 && m_autoclamp_start_time != 0)
+                        if (pros::millis() - m_autoclamp_start_time > 50 && m_autoclamp_start_time != 0)
                         {
                             m_pneumatic->extend();
                             m_autoclamp_start_time = 0;
