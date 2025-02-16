@@ -96,7 +96,7 @@ namespace mechanism
                     m_colour_state_detector.check(ring_colour);
                     if (m_colour_state_detector.getChanged())
                     {
-                        if (m_colour_state_detector.getValue() == m_sort_colour) // if colour is sorted colour
+                        if (m_colour_state_detector.getValue() != RingColours::NONE) // if colour is sorted colour
                         {
                             m_possession.push_back(m_colour_state_detector.getValue()); // Add new ring to possession
                         }
