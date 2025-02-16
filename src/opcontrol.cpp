@@ -28,6 +28,11 @@ void control_intake(pros::Controller &controller)
             intake.set_state(mechanism::IntakeState::DISABLED);
         }
     }
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+    {
+        intake.disable_sort();
+        intake.set_state(mechanism::IntakeState::DISABLED);
+    }
 }
 
 void control_arm(pros::Controller &controller)
@@ -95,8 +100,10 @@ void control_doinker(pros::Controller controller)
 
 void opcontrol()
 {
+    auto &clamp = mechanism::Clamp::get_instance();
     auto &intake = mechanism::Intake::get_instance();
-    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
+
+    clamp.set_autoclamp(false);
 
     while (true)
     {

@@ -4,7 +4,7 @@
 
 void prog_skills()
 {
-    chassis->setPose(-66, 0, 90);
+    chassis->setPose(-65.5, 0, 90);
 
     auto &arm = mechanism::Arm::get_instance();
     auto &intake = mechanism::Intake::get_instance();
@@ -12,48 +12,60 @@ void prog_skills()
 
     // alliance stake
     intake.set_state(mechanism::IntakeState::HOOK);
-    pros::delay(300);
+    pros::delay(1000);
     intake.set_state(mechanism::IntakeState::DISABLED);
 
-    chassis->moveToPose(-48, 0, 0, 2000, {.maxSpeed = 110});
-    chassis->turnToPoint(-48, -22.5, 2000, {.forwards = false});
-    chassis->moveToPose(-48, -22.5, 0, 2500, {.maxSpeed = 110});
-
-    // TODO: clamp shit
+    chassis->moveToPoint(-48, 0, 4000, {.maxSpeed = 110});
+    chassis->turnToPoint(-48, -24, 4000, {.forwards = false});
+    chassis->moveToPoint(-48, -24, 4000, {.forwards = false, .maxSpeed = 80});
     clamp.set_autoclamp(true);
     while (chassis->isInMotion() && !clamp.get_value())
     {
         pros::delay(20);
     }
-
     chassis->cancelMotion();
-
-    // first 2 rings
-    chassis->moveToPoint(-21, -24, 2000, {.minSpeed = 127, .earlyExitRange = 2.5});
     intake.set_state(mechanism::IntakeState::HOOK);
-    chassis->moveToPoint(0, -40, 2000, {.minSpeed = 127, .earlyExitRange = 6}); // to avoid ladder
-    chassis->moveToPoint(25.5, -49, 3000, {.minSpeed = 90, .earlyExitRange = 4});
 
-    // first blue stack
-    chassis->moveToPoint(48, -60, 2000);
-    chassis->waitUntil(10);
-    arm.set_state(mechanism::ArmState::LOAD);
-
-    chassis->moveToPoint(4.5, -44.5, 3000, {.minSpeed = 50, .earlyExitRange = 4});
-
-    // wall stake
-    chassis->moveToPose(0, -63, 180, 2500);
-    arm.set_state(mechanism::ArmState::PRIME);
+    chassis->moveToPoint(-48, -48, 3000);
+    chassis->moveToPoint(-48, -60, 3000);
+    chassis->turnToPoint(-62, -62, 3000, {.forwards = false});
+    chassis->moveToPoint(-62, -62, 3000, {.forwards = false});
     chassis->waitUntilDone();
-    intake.stop_next_ring();
+    intake.set_state(mechanism::IntakeState::DISABLED);
 
-    arm.set_state(mechanism::ArmState::NEUTRAL_STAKE);
-    pros::delay(800);
+    clamp.set_autoclamp(false);
+    clamp.retract();
 
-    // move back
-    chassis->moveToPoint(0, -61, 1000, {.forwards = false});
-    chassis->moveToPoint(0, -63, 2500);
+    chassis->moveToPoint(-48, -48, 3000);
+    chassis->turnToPoint(-48, 24, 2000);
+
+    chassis->moveToPoint(-48, 24, 7000, {.forwards = false, .maxSpeed = 100});
+    clamp.set_autoclamp(true);
+    while (chassis->isInMotion() && !clamp.get_value())
+    {
+        pros::delay(20);
+    }
+    chassis->cancelMotion();
+    intake.set_state(mechanism::IntakeState::HOOK);
+
+    chassis->moveToPoint(-48, 48, 3000);
+    chassis->moveToPoint(-48, 60, 3000);
+
+    chassis->turnToPoint(-62, 62, 3000, {.forwards = false});
+    chassis->moveToPoint(-62, 62, 3000, {.forwards = false});
     chassis->waitUntilDone();
+    intake.set_state(mechanism::IntakeState::DISABLED);
 
-    arm.set_state(mechanism::ArmState::NEUTRAL_STAKE);
+    clamp.set_autoclamp(false);
+    clamp.retract();
+
+    chassis->moveToPoint(0, 48, 5000);
+    chassis->moveToPoint(57, 0, 5000);
+    chassis->moveToPoint(62, 62, 5000);
+    chassis->swingToPoint(72, 64, lemlib::DriveSide::RIGHT, 2000);
+
+    chassis->moveToPoint(57, 0, 5000, {.forwards = false});
+    chassis->moveToPoint(62, -62, 5000);
+    chassis->swingToPoint(72, -64, lemlib::DriveSide::LEFT, 2000);
+    chassis->moveToPoint(38, -38, 3000, {.forwards = false});
 }

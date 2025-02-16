@@ -4,12 +4,11 @@
 
 void autonomous()
 {
-    red_mogo();
-    // get the potentiometer value
-    // int pot_value = potentiometer.get_value();
-    // // depending on which auton is selected, run the corresponding function
-    // // get one of 8 ranges from potentiometer
-    // int pot_range = std::floor(pot_value / 45);
+    blue_awp(); // get the potentiometer value
+                 // int pot_value = potentiometer.get_value();
+                 // // depending on which auton is selected, run the corresponding function
+                 // // get one of 8 ranges from potentiometer
+                 // int pot_range = std::floor(pot_value / 45);
 
     // switch (pot_range)
     // {   

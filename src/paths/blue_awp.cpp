@@ -1,14 +1,17 @@
 #include "config.hpp"
 #include "main.h"
 
-void red_awp() {
+void blue_awp()
+{
     chassis->setPose(-55.5, 16, -180);
 
     auto &arm = mechanism::Arm::get_instance();
     auto &intake = mechanism::Intake::get_instance();
     auto &clamp = mechanism::Clamp::get_instance();
 
-    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
+    intake.enable_sort(mechanism::Intake::RingColours::RED);
+
+    pros::delay(5000);
 
     chassis->moveToPose(-60.5, 9.5, 208, 1200, {.lead = 0.05});
     chassis->waitUntilDone();
@@ -25,10 +28,10 @@ void red_awp() {
         pros::delay(20);
     }
     chassis->cancelMotion();
-    
+
     intake_lift.extend();
     chassis->moveToPoint(-45, 4, 3000);
-    
+
     chassis->waitUntilDone();
     intake.set_state(mechanism::IntakeState::HOOK);
     intake_lift.retract();

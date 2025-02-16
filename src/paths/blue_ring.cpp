@@ -9,6 +9,8 @@ void blue_ring()
 
     chassis->setPose(56, 40.5, 90);
 
+    intake.enable_sort(mechanism::Intake::RingColours::RED);
+
     // mogo, early exit for smoother
     chassis->moveToPoint(36.5, 31, 3000, {.forwards = false, .minSpeed = 110, .earlyExitRange = 6});
     chassis->moveToPose(31.785, 28.712, 60, 3000, {.forwards = false, .lead = 0.1});
