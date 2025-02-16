@@ -6,8 +6,8 @@ namespace mechanism
     std::unique_ptr<Intake> Intake::instance = nullptr;
     std::once_flag Intake::init_flag;
 
-    Intake::Intake(std::shared_ptr<pros::MotorGroup> motors, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound)
-        : motors(motors), m_optical_sensor(optical_sensor), m_distance_sensor(distance_sensor), m_sort_distance(sort_distance), m_red_bound(red_bound), m_blue_bound(blue_bound), m_sort_enabled(false), m_sort_colour(RingColours::NONE), m_colour_state_detector(RingColours::NONE), m_ring_state_detector()
+    Intake::Intake(std::shared_ptr<pros::Motor> f_motor, std::shared_ptr<pros::Motor> s_motor, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound)
+        : m_f_motor(f_motor), m_s_motor(s_motor), m_optical_sensor(optical_sensor), m_distance_sensor(distance_sensor), m_sort_distance(sort_distance), m_red_bound(red_bound), m_blue_bound(blue_bound), m_sort_enabled(false), m_sort_colour(RingColours::NONE), m_colour_state_detector(RingColours::NONE), m_ring_state_detector()
     {
         start_task();
     }
@@ -117,7 +117,8 @@ namespace mechanism
 
                             // m_pSort->extend();
                             this->dejam_start_time = pros::millis();
-                            this->pre_dejam_state = this->state;
+                            // we have to check if the prev state was a dejam else it gets stuck in a cycle
+                            this->pre_dejam_state = this->state == IntakeState::DEJAM ? IntakeState::DISABLED : this->state;
                             this->state = IntakeState::DEJAM;
                         }
                         if (m_possession.size() > 0)
@@ -142,7 +143,7 @@ namespace mechanism
                 auto& arm = Arm::get_instance();
                 
                 // Check if the motors are at 0 velocity
-                if (std::abs(motors->get_actual_velocity(1)) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
+                if (std::abs(m_s_motor->get_actual_velocity(1)) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
                 {
                     // If the motors are at 0 velocity, start or update the timer
                     if (zero_velocity_start_time == 0)
@@ -153,7 +154,7 @@ namespace mechanism
                     {
                         // If the motors have been at 0 velocity for more than 500 ms, activate dejam state
                         this->dejam_start_time = pros::millis();
-                        this->pre_dejam_state = this->state;
+                        this->pre_dejam_state = this->state == IntakeState::DEJAM ? IntakeState::DISABLED : this->state;
                         this->state = IntakeState::DEJAM;
                     }
                 }
@@ -191,23 +192,33 @@ namespace mechanism
                 
                 switch (current_state) {
                     case IntakeState::HOOK:
-                        motors->move(127);
+                        m_f_motor->move(127);
+                        m_s_motor->move(127);
+                        pros::lcd::print(6, "HOOK");
+                        break;
+                    case IntakeState::FIRST_HOOK:
+                        m_f_motor->move(127);
+                        m_s_motor->move(0);
                         pros::lcd::print(6, "HOOK");
                         break;
                     case IntakeState::WALL_STAKE:
-                        motors->move(-40);
+                        m_f_motor->move(-40);
+                        m_s_motor->move(-40);
                         pros::lcd::print(6, "WALL_STAKE");
                         break;
                     case IntakeState::REVERSE:
-                        motors->move(-127);
+                        m_f_motor->move(-127);
+                        m_s_motor->move(-127);
                         pros::lcd::print(6, "REVERSE");
                         break;
                     case IntakeState::DEJAM:
-                        motors->move(-127);
+                        m_f_motor->move(-127);
+                        m_s_motor->move(-127);
                         pros::lcd::print(6, "DEJAM");
                         break;
                     case IntakeState::DISABLED:
-                        motors->move(0);
+                        m_f_motor->move(0);
+                        m_s_motor->move(0);
                         pros::lcd::print(6, "DISABLED");
                         break;
                 }
@@ -242,7 +253,8 @@ namespace mechanism
         mutex.lock();
         if (new_state == IntakeState::DISABLED)
         {
-            motors->move(0);
+            m_f_motor->move(0);
+            m_s_motor->move(0);
         }
         state = new_state;
         mutex.unlock();

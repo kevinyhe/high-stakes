@@ -10,6 +10,7 @@ namespace mechanism
     {
         DISABLED,
         HOOK,
+        FIRST_HOOK,
         WALL_STAKE,
         REVERSE,
         DEJAM
@@ -26,7 +27,8 @@ namespace mechanism
         };
 
     private:
-        std::shared_ptr<pros::MotorGroup> motors;
+        std::shared_ptr<pros::Motor> m_f_motor;
+        std::shared_ptr<pros::Motor> m_s_motor;
         std::shared_ptr<pros::Optical> m_optical_sensor;
         std::shared_ptr<pros::Distance> m_distance_sensor;
 
@@ -55,7 +57,7 @@ namespace mechanism
         static std::once_flag init_flag;
 
         // private constructor/destructor
-        explicit Intake(std::shared_ptr<pros::MotorGroup> motors, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound);
+        explicit Intake(std::shared_ptr<pros::Motor> f_motor, std::shared_ptr<pros::Motor> s_motor, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound);
         Intake() = delete;
 
     public:
@@ -79,10 +81,10 @@ namespace mechanism
         }
 
         // initialization function, call this once to create the instance
-        static void initialize(std::shared_ptr<pros::MotorGroup> motors, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound)
+        static void initialize(std::shared_ptr<pros::Motor> f_motor, std::shared_ptr<pros::Motor> s_motor, std::shared_ptr<pros::Optical> optical_sensor, std::shared_ptr<pros::Distance> distance_sensor, std::int32_t sort_distance, double red_bound, double blue_bound)
         {
             std::call_once(init_flag, [&]()
-                           { instance.reset(new Intake(motors, optical_sensor, distance_sensor, sort_distance, red_bound, blue_bound)); });
+                           { instance.reset(new Intake(f_motor, s_motor, optical_sensor, distance_sensor, sort_distance, red_bound, blue_bound)); });
         }
 
         void enable_sort(RingColours sortColor);
