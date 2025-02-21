@@ -6,6 +6,7 @@
 #include "mechanism/intake.hpp"
 #include "mechanism/clamp.hpp"
 #include "device/pneumatic.hpp"
+#include "device/mock_gyro.hpp"
 #include "math/math.hpp"
 #include "math/vector.hpp"
 #include "math/angle.hpp"
@@ -26,7 +27,8 @@ namespace config
 
     // subsystems
     inline const char PORT_POTENTIOMETER = 'H';
-    inline const std::initializer_list<int8_t> PORT_INTAKE = {9, -11};
+    inline const int8_t PORT_INTAKE_FIRST = 9;
+    inline const int8_t PORT_INTAKE_SECOND = -11;
 
     inline const int8_t PORT_ARM = 10;
     inline const int8_t PORT_ARM_ROTATION = -18;
@@ -54,10 +56,10 @@ namespace config
     inline const int8_t PORT_VERTICAL_ROTATION = 21; 
     inline const int8_t PORT_LATERAL_ROTATION = -8; 
     
-    inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2;
-    inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = 0.5; // TODO:
-    inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 2;
-    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 0.5; // TODO:
+    inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2.0;
+    inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = -0.15; // TODO:
+    inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 2.0;
+    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 1.5; // TODO:
 
     // PID
     inline const double LINEAR_KP = 7.0; 
@@ -117,12 +119,15 @@ inline pros::Imu imu(config::PORT_IMU);
 inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 
+inline IMUHeadingSource *mock_imu_source = new IMUHeadingSource(&imu, 360/359); // gain
+inline auto mock_imu = new MockIMU({mock_imu_source});
+
 inline lemlib::OdomSensors sensors(
     new lemlib::TrackingWheel(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE),
     nullptr,
     new lemlib::TrackingWheel(&lateral_rotation, config::HORIZONTAL_TRACKING_WHEEL_DIAMETER, config::HORIZONTAL_TRACKING_WHEEL_DISTANCE),
     nullptr,
-    &imu);
+    mock_imu);
 
 inline lemlib::ControllerSettings linearSettings(config::LINEAR_KP, config::LINEAR_KI, config::LINEAR_KD, config::LINEAR_WINDUP, config::LINEAR_SMALL_ERROR, config::LINEAR_SMALL_ERROR_TIMEOUT, config::LINEAR_LARGE_ERROR, config::LINEAR_LARGE_ERROR_TIMEOUT, config::LINEAR_SLEW);
 inline lemlib::ControllerSettings angularSettings(config::ANGULAR_KP, config::ANGULAR_KI, config::ANGULAR_KD, config::ANGULAR_WINDUP, config::ANGULAR_SMALL_ERROR, config::ANGULAR_SMALL_ERROR_TIMEOUT, config::ANGULAR_LARGE_ERROR, config::ANGULAR_LARGE_ERROR_TIMEOUT, config::ANGULAR_SLEW);

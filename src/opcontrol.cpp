@@ -69,10 +69,10 @@ void control_clamp(pros::Controller controller)
 {
     auto &clamp = mechanism::Clamp::get_instance();
 
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
-    {
-        clamp.set_autoclamp(!clamp.get_autoclamp());
-    }
+    // if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
+    // {
+    //     clamp.set_autoclamp(!clamp.get_autoclamp());
+    // }
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y))
     {
         clamp.toggle();

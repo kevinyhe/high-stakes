@@ -1,6 +1,11 @@
 #include "main.h"
+#include "autonomous.hpp"
 #include "config.hpp"
 #include "mcl/mcl.hpp"
+
+#include "config.hpp"
+#include "main.h"
+#include <timer.hpp>
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -12,11 +17,12 @@ void initialize()
 {
 	pros::lcd::initialize();
 
-	auto intake_motors = std::make_shared<pros::MotorGroup>(config::PORT_INTAKE);
+	auto intake_f_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE_FIRST);
+	auto intake_s_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE_SECOND);
 	auto intake_optical = std::make_shared<pros::Optical>(config::PORT_RING_SORT_OPTICAL);
 	auto intake_distance = std::make_shared<pros::Distance>(config::PORT_RING_SORT_DISTANCE);
 
-	mechanism::Intake::initialize(intake_motors, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
+	mechanism::Intake::initialize(intake_f_motor, intake_s_motor, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
 
 	auto arm_motors = std::make_shared<pros::Motor>(config::PORT_ARM);
 	auto arm_rotation = std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION);
@@ -52,40 +58,6 @@ void initialize()
             // delay to save resources
             pros::delay(50);
         } });
-
-	// busted
-// 	MCLOdom mcl_odom = MCLOdom({.particle_count = 2000,
-// 								.uniform_random_percent = 0.1, // this randomness prevents the system from getting stuck in a bad guess
-// 								.tracker_odom_sd = 0.05},
-// 							   chassis,
-// 							   {{
-// 									// front
-// 									.port = 1,
-// 									.x_offset = -5.5,
-// 									.y_offset = 7,
-// 									.theta_offset = 0,
-// 								},
-// 								{
-// 									// back
-// 									.port = 1,
-// 									.x_offset = -5.5,
-// 									.y_offset = -5.5,
-// 									.theta_offset = M_PI,
-// 								},
-// 								{
-// 									// left
-// 									.port = 1,
-// 									.x_offset = -5.25,
-// 									.y_offset = -3,
-// 									.theta_offset = M_PI / 2.0,
-// 								},
-// 								{
-// 									// right
-// 									.port = 1,
-// 									.x_offset = 7,
-// 									.y_offset = -5,
-// 									.theta_offset = -M_PI / 2.0,
-// 								}});
 }
 
 /**
@@ -95,6 +67,27 @@ void initialize()
  */
 void disabled() {
 	
+}
+
+void autonomous()
+{
+	std::cout << std::fixed << "\033[1mCopy this:\033[0m\n\\left[";
+	chassis->tank(-50, 50, true);
+	chassis->setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
+	int movementIndex = 0;
+	auto end_time = 10000 + pros::c::millis();
+	
+	while (pros::c::millis() < end_time && movementIndex++ < 10000)
+	{
+		std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
+		if (movementIndex % 50 == 0)
+			std::cout.flush(); // Print output immediately.
+		pros::delay(20);
+	}
+	chassis->cancelAllMotions();
+	std::cout << "\b\\right]" << std::endl;
+	std::cout << "Go to https://www.desmos.com/calculator/rxdoxxil1j to solve for offsets." << std::endl; // auto &auton_selector = AutonSelector::get_instance();
+																										  // auton_selector.run_selected_routine();
 }
 
 /**
@@ -109,40 +102,53 @@ void disabled() {
 int prev_pot_range = 0;
 
 void competition_initialize() {
-	// while (pros::competition::is_disabled()) {
-	// 	// get the potentiometer value
-	// 	int pot_value = potentiometer.get_value();
-	// 	// depending on which auton is selected, run the corresponding function
-	// 	// get one of 8 ranges from potentiometer
-	// 	int pot_range = std::floor(pot_value / 45);
-	// 	int prev_pot_range = pot_range;
-	
-	// 	if (prev_pot_range != pot_range) {
-	// 		controller.rumble(".");
-	// 	}
-	
-	// 	switch (pot_range)
-	// 	{
-	// 	case 0:
-	// 		controller.print(0, 0, "Red Mogo");
-	// 		break;
-	// 	case 1:
-	// 		controller.print(0, 0, "Blue Mogo");
-	// 		break;
-	// 	case 2:
-	// 		controller.print(0, 0, "Red Ring");
-	// 		break;
-	// 	case 3:
-	// 		controller.print(0, 0, "Blue Ring");
-	// 		break;
-	// 	case 4:
-	// 		controller.print(0, 0, "Prog Skills");
-	// 		break;
-	// 	case 5:
-	// 		controller.print(0, 0, "Default");
-	// 		break;
-	// 	default:
-	// 		break;
-	// 	}
-	// }
+	int prev_pot_range = 0;
+
+	while (pros::competition::is_disabled())
+	{
+		// get the potentiometer value
+		int pot_value = potentiometer.get_value();
+		// depending on which auton is selected, run the corresponding function
+		// get one of 8 ranges from potentiometer
+		int pot_range = std::floor(pot_value / 45);
+
+		if (prev_pot_range != pot_range)
+		{
+			controller.rumble(".");
+			prev_pot_range = pot_range;
+		}
+
+		auto &auton_selector = AutonSelector::get_instance();
+
+		switch (pot_range)
+		{
+		case 0:
+			controller.print(0, 0, "Red Mogo   ");
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::RED_MOGO);
+			break;
+		case 1:
+			controller.print(0, 0, "Blue Mogo  ");
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::BLUE_MOGO);
+			break;
+		case 2:
+			controller.print(0, 0, "Red Ring   ");
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::RED_RING);
+			break;
+		case 3:
+			controller.print(0, 0, "Blue Ring  ");
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::BLUE_RING);
+			break;
+		case 4:
+			controller.print(0, 0, "Prog Skills");
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::PROG_SKILLS);
+			break;
+		case 5:
+			controller.print(0, 0, "Default    ");
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::DEFAULT);
+			break;
+		default:
+			break;
+		}
+		pros::delay(50);
+	}
 }
