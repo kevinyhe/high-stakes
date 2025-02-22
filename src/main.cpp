@@ -3,9 +3,6 @@
 #include "config.hpp"
 #include "mcl/mcl.hpp"
 
-#include "config.hpp"
-#include "main.h"
-#include <timer.hpp>
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -69,25 +66,64 @@ void disabled() {
 	
 }
 
-void autonomous()
+void find_tracking_center(float turnVoltage, uint32_t time)
 {
+	chassis->setPose(0, 0, 0);
+	unsigned long n = 0;
+	float heading;
+
 	std::cout << std::fixed << "\033[1mCopy this:\033[0m\n\\left[";
-	chassis->tank(-50, 50, true);
 	chassis->setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-	int movementIndex = 0;
-	auto end_time = 10000 + pros::c::millis();
-	
-	while (pros::c::millis() < end_time && movementIndex++ < 10000)
+	chassis->tank(-turnVoltage, turnVoltage);
+
+	std::ostringstream out;
+
+	auto end_time = time + pros::millis();
+
+	std::vector<float> thetas;
+
+	int i = 0;
+
+	while (pros::millis() < end_time && i++ < 12000)
 	{
 		std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
-		if (movementIndex % 50 == 0)
-			std::cout.flush(); // Print output immediately.
+		thetas.emplace_back(chassis->getPose(true).theta);
+
+		/*if (i % 250 == 0) {
+		  std::cout << "\\right]\n\\left[" ;
+		} */
+		if (i % 50 == 0)
+		{
+			std::cout.flush();
+		}
 		pros::delay(20);
 	}
 	chassis->cancelAllMotions();
 	std::cout << "\b\\right]" << std::endl;
-	std::cout << "Go to https://www.desmos.com/calculator/rxdoxxil1j to solve for offsets." << std::endl; // auto &auton_selector = AutonSelector::get_instance();
-																										  // auton_selector.run_selected_routine();
+
+	pros::delay(1000);
+	std::cout << "\\theta_{t}=\\left[";
+	i = 0;
+
+	for (auto &theta : thetas)
+	{
+		i++;
+		std::cout << theta << ",";
+		if (i % 50 == 0)
+			std::cout.flush();
+		pros::delay(20);
+	}
+	std::cout << "\b\\right]" << std::endl;
+
+	std::cout << "Go to https://www.desmos.com/calculator/rxdoxxil1j to solve for offsets." << std::endl;
+}
+
+void autonomous()
+{
+	find_tracking_center(70, 12000);
+
+	auto &auton_selector = AutonSelector::get_instance();
+	auton_selector.run_selected_routine();
 }
 
 /**

@@ -6,11 +6,13 @@
 #include "mechanism/intake.hpp"
 #include "mechanism/clamp.hpp"
 #include "device/pneumatic.hpp"
-#include "device/mock_gyro.hpp"
+#include "device/imu.hpp"
 #include "math/math.hpp"
 #include "math/vector.hpp"
 #include "math/angle.hpp"
 #include "math/pose.hpp"
+
+#include "lemlib/timer.hpp"
 
 namespace config
 {
@@ -59,7 +61,7 @@ namespace config
     inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2.0;
     inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = -0.15; // TODO:
     inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 2.0;
-    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 1.5; // TODO:
+    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 1.286337281; // TODO:
 
     // PID
     inline const double LINEAR_KP = 7.0; 
@@ -114,20 +116,19 @@ inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, config::DRIVE_
 
 inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
 inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
-inline pros::Imu imu(config::PORT_IMU);
-
+inline MockIMU mock_IMU(config::PORT_IMU, 360/361.5); // gain factor
 inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 
-inline IMUHeadingSource *mock_imu_source = new IMUHeadingSource(&imu, 360/359); // gain
-inline auto mock_imu = new MockIMU({mock_imu_source});
+inline lemlib::TrackingWheel vertical_tracking(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE);
+inline lemlib::TrackingWheel lateral_tracking(&lateral_rotation, config::HORIZONTAL_TRACKING_WHEEL_DIAMETER, config::HORIZONTAL_TRACKING_WHEEL_DISTANCE);
 
 inline lemlib::OdomSensors sensors(
-    new lemlib::TrackingWheel(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE),
+    &vertical_tracking,
     nullptr,
-    new lemlib::TrackingWheel(&lateral_rotation, config::HORIZONTAL_TRACKING_WHEEL_DIAMETER, config::HORIZONTAL_TRACKING_WHEEL_DISTANCE),
+    &lateral_tracking,
     nullptr,
-    mock_imu);
+    &mock_IMU);
 
 inline lemlib::ControllerSettings linearSettings(config::LINEAR_KP, config::LINEAR_KI, config::LINEAR_KD, config::LINEAR_WINDUP, config::LINEAR_SMALL_ERROR, config::LINEAR_SMALL_ERROR_TIMEOUT, config::LINEAR_LARGE_ERROR, config::LINEAR_LARGE_ERROR_TIMEOUT, config::LINEAR_SLEW);
 inline lemlib::ControllerSettings angularSettings(config::ANGULAR_KP, config::ANGULAR_KI, config::ANGULAR_KD, config::ANGULAR_WINDUP, config::ANGULAR_SMALL_ERROR, config::ANGULAR_SMALL_ERROR_TIMEOUT, config::ANGULAR_LARGE_ERROR, config::ANGULAR_LARGE_ERROR_TIMEOUT, config::ANGULAR_SLEW);
