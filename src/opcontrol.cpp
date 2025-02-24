@@ -104,6 +104,7 @@ void opcontrol()
     auto &intake = mechanism::Intake::get_instance();
 
     clamp.set_autoclamp(false);
+    // intake.enable_sort(mechanism::Intake::RingColours::RED);
 
     while (true)
     {

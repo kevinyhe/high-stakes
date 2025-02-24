@@ -78,6 +78,8 @@ namespace mechanism
                     int proximity = m_optical_sensor->get_proximity();
                     RingColours ring_colour;
 
+                    // std::cout << "Proximity: " << proximity << std::endl;
+
                     // Calculate Current Ring Color
                     if (color < m_red_bound && proximity > 180)
                     {
@@ -112,8 +114,7 @@ namespace mechanism
                         // If sort is active and color is wrong, remove ring
                         if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
-                            pros::delay(40);
-                            pros::lcd::print(7, "jews detected");
+                            pros::delay(50);
 
                             // m_pSort->extend();
                             this->dejam_start_time = pros::millis();
@@ -129,10 +130,8 @@ namespace mechanism
                     // If ring state has changed to nothing detected
                     else if (m_ring_state_detector.getChanged() && !m_ring_state_detector.getValue())
                     {
-                        pros::lcd::print(7, "nothing detected");
                         // do nothing
                     }
-                    pros::lcd::print(5, "%d", m_possession.size());
                 }
                 else if (!m_sort_enabled)
                 {
@@ -194,32 +193,32 @@ namespace mechanism
                     case IntakeState::HOOK:
                         m_f_motor->move(127);
                         m_s_motor->move(127);
-                        pros::lcd::print(6, "HOOK");
+                        // pros::lcd::print(6, "HOOK");
                         break;
                     case IntakeState::FIRST_HOOK:
                         m_f_motor->move(127);
                         m_s_motor->move(0);
-                        pros::lcd::print(6, "HOOK");
+                        // pros::lcd::print(6, "HOOK");
                         break;
                     case IntakeState::WALL_STAKE:
                         m_f_motor->move(-40);
                         m_s_motor->move(-40);
-                        pros::lcd::print(6, "WALL_STAKE");
+                        // pros::lcd::print(6, "WALL_STAKE");
                         break;
                     case IntakeState::REVERSE:
                         m_f_motor->move(-127);
                         m_s_motor->move(-127);
-                        pros::lcd::print(6, "REVERSE");
+                        // pros::lcd::print(6, "REVERSE");
                         break;
                     case IntakeState::DEJAM:
                         m_f_motor->move(-127);
                         m_s_motor->move(-127);
-                        pros::lcd::print(6, "DEJAM");
+                        // pros::lcd::print(6, "DEJAM");
                         break;
                     case IntakeState::DISABLED:
                         m_f_motor->move(0);
                         m_s_motor->move(0);
-                        pros::lcd::print(6, "DISABLED");
+                        // pros::lcd::print(6, "DISABLED");
                         break;
                 }
 

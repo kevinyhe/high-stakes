@@ -40,7 +40,7 @@ namespace config
     inline const char PORT_CLAMP = 'G'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
-        load : 56.0,
+        load : 55.0,
         idle : 20.0,
         prime : 90.0,
         neutral_stake : 175.0
@@ -48,7 +48,7 @@ namespace config
     inline const PIDParameters PARAMS_ARM_PID = {
         kP : 5.2,
         kI : 0.0,
-        kD : 15.0,
+        kD : 20.0,
     };
     inline const double ARM_kG = 9.8;
     inline const std::shared_ptr<PID> ARM_PID = std::make_shared<PID>(PARAMS_ARM_PID);
@@ -58,10 +58,10 @@ namespace config
     inline const int8_t PORT_VERTICAL_ROTATION = 21; 
     inline const int8_t PORT_LATERAL_ROTATION = -8; 
     
-    inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2.0;
-    inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = -0.15; // TODO:
-    inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 2.0;
-    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 1.286337281; // TODO:
+    inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2.75;
+    inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = 0; // TODO:
+    inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 1.9753086420;
+    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 1.5; // TODO:
 
     // PID
     inline const double LINEAR_KP = 7.0; 
@@ -80,7 +80,7 @@ namespace config
     inline double ANGULAR_KD = 9.0; 
 
     inline const double ANGULAR_WINDUP = 0.0; 
-    inline const double ANGULAR_SMALL_ERROR = 1.2; 
+    inline const double ANGULAR_SMALL_ERROR = 1; 
     inline const double ANGULAR_SMALL_ERROR_TIMEOUT = 200; 
     inline const double ANGULAR_LARGE_ERROR = 2.5; 
     inline const double ANGULAR_LARGE_ERROR_TIMEOUT = 1000; 
@@ -116,7 +116,7 @@ inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, config::DRIVE_
 
 inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
 inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
-inline MockIMU mock_IMU(config::PORT_IMU, 360/361.5); // gain factor
+inline MockIMU mock_IMU(config::PORT_IMU, 2160.0/2167.5); // gain factor
 inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 
@@ -144,3 +144,5 @@ inline pros::adi::Potentiometer potentiometer(config::PORT_POTENTIOMETER, pros::
 // 358.97
 
 // 1.0046394809
+
+// 2167

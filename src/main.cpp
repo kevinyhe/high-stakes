@@ -1,8 +1,6 @@
 #include "main.h"
 #include "autonomous.hpp"
 #include "config.hpp"
-#include "mcl/mcl.hpp"
-
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -42,6 +40,8 @@ void initialize()
 	arm_rotation->set_position(2000);
 
 	chassis->calibrate(); // calibrate sensors
+
+	// pros::Task t_UKFTask(UKFTask, nullptr, "UKFTask");
 
 	pros::Task screenTask([&]()
 						  {
@@ -87,7 +87,7 @@ void find_tracking_center(float turnVoltage, uint32_t time)
 	while (pros::millis() < end_time && i++ < 12000)
 	{
 		std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
-		thetas.emplace_back(chassis->getPose(true).theta);
+		thetas.emplace_back(chassis->getPose().theta);
 
 		/*if (i % 250 == 0) {
 		  std::cout << "\\right]\n\\left[" ;
@@ -120,10 +120,10 @@ void find_tracking_center(float turnVoltage, uint32_t time)
 
 void autonomous()
 {
-	find_tracking_center(70, 12000);
+	red_mogo();
 
-	auto &auton_selector = AutonSelector::get_instance();
-	auton_selector.run_selected_routine();
+	// auto &auton_selector = AutonSelector::get_instance();
+	// auton_selector.run_selected_routine();
 }
 
 /**

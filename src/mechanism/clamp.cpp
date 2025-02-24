@@ -46,7 +46,6 @@ namespace mechanism
                 {
                     if (m_distance->get() < m_autoclamp_threshold)
                     {
-                        pros::lcd::print(4, "clamping");
                         if (m_autoclamp_start_time == 0) {
                             m_autoclamp_start_time = pros::millis();
                         }
@@ -57,7 +56,6 @@ namespace mechanism
                         }
                     }
                     else {
-                        pros::lcd::print(4, "no clamping");
                         m_autoclamp_start_time = 0;
                     }
                 }
