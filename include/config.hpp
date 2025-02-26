@@ -46,9 +46,9 @@ namespace config
         neutral_stake : 175.0
     };
     inline const PIDParameters PARAMS_ARM_PID = {
-        kP : 5.2,
+        kP : 4.2,
         kI : 0.0,
-        kD : 20.0,
+        kD : 12.0,
     };
     inline const double ARM_kG = 9.8;
     inline const std::shared_ptr<PID> ARM_PID = std::make_shared<PID>(PARAMS_ARM_PID);
@@ -56,12 +56,12 @@ namespace config
     // sensors
     inline const int8_t PORT_IMU = 19;      
     inline const int8_t PORT_VERTICAL_ROTATION = 21; 
-    inline const int8_t PORT_LATERAL_ROTATION = -8; 
+    inline const int8_t PORT_LATERAL_ROTATION = 12; 
     
     inline const double VERTICAL_TRACKING_WHEEL_DIAMETER = 2.75;
-    inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = 0; // TODO:
-    inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 1.9753086420;
-    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 1.5; // TODO:
+    inline const double VERTICAL_TRACKING_WHEEL_DISTANCE = 0.5; // TODO:
+    inline const double HORIZONTAL_TRACKING_WHEEL_DIAMETER = 2;
+    inline const double HORIZONTAL_TRACKING_WHEEL_DISTANCE = 0.125; // TODO:
 
     // PID
     inline const double LINEAR_KP = 7.0; 
@@ -116,7 +116,8 @@ inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, config::DRIVE_
 
 inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
 inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
-inline MockIMU mock_IMU(config::PORT_IMU, 2160.0/2167.5); // gain factor
+inline MockIMU mock_IMU(config::PORT_IMU, 360/361.5); // gain factor
+// inline pros::Imu imu(config::PORT_IMU);
 inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 

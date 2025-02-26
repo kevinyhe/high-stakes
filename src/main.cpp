@@ -12,16 +12,22 @@ void initialize()
 {
 	pros::lcd::initialize();
 
+	vertical_rotation.set_data_rate(5);
+	lateral_rotation.set_data_rate(5);
+	mock_IMU.set_data_rate(5);
+	vertical_rotation.set_position(0);
+	lateral_rotation.set_position(0);
+
 	auto intake_f_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE_FIRST);
 	auto intake_s_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE_SECOND);
 	auto intake_optical = std::make_shared<pros::Optical>(config::PORT_RING_SORT_OPTICAL);
 	auto intake_distance = std::make_shared<pros::Distance>(config::PORT_RING_SORT_DISTANCE);
 
 	mechanism::Intake::initialize(intake_f_motor, intake_s_motor, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
-
+	
 	auto arm_motors = std::make_shared<pros::Motor>(config::PORT_ARM);
 	auto arm_rotation = std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION);
-
+		
 	arm_motors->set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
 	mechanism::Arm::initialize(
@@ -37,9 +43,9 @@ void initialize()
 		config::AUTOCLAMP_THRESHOLD);
 
 	// arm_rotation->reset();
-	arm_rotation->set_position(2000);
 
 	chassis->calibrate(); // calibrate sensors
+	mock_IMU.tare();
 
 	// pros::Task t_UKFTask(UKFTask, nullptr, "UKFTask");
 
@@ -53,8 +59,16 @@ void initialize()
             // log position telemetry
             lemlib::telemetrySink()->info("Chassis pose: {}", chassis->getPose());
             // delay to save resources
-            pros::delay(50);
-        } });
+			std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
+
+				/*if (i % 250 == 0) {
+				  std::cout << "\\right]\n\\left[" ;
+				} */
+			std::cout.flush();
+			
+			pros::delay(50);
+		}
+	});
 }
 
 /**
@@ -120,7 +134,8 @@ void find_tracking_center(float turnVoltage, uint32_t time)
 
 void autonomous()
 {
-	red_mogo();
+	// find_tracking_center(80, 10000);
+	prog_skills();
 
 	// auto &auton_selector = AutonSelector::get_instance();
 	// auton_selector.run_selected_routine();

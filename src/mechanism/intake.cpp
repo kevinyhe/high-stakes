@@ -20,7 +20,7 @@ namespace mechanism
     void Intake::enable_sort(RingColours colour)
     {
         m_optical_sensor->set_integration_time(20); // Decrease Update time
-
+       
         m_sort_enabled = true;  // Enable Sort
         m_sort_colour = colour; // Set Sort Color
     }

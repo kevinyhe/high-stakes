@@ -42,6 +42,9 @@ namespace mechanism
             return;
         }
 
+        arm_rotation_sensor->set_data_rate(5);
+        arm_rotation_sensor->set_position(2000);
+
         task_on_flag = true;
         mutex.unlock();
 

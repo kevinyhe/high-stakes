@@ -100,11 +100,13 @@ void control_doinker(pros::Controller controller)
 
 void opcontrol()
 {
+
     auto &clamp = mechanism::Clamp::get_instance();
     auto &intake = mechanism::Intake::get_instance();
 
     clamp.set_autoclamp(false);
     // intake.enable_sort(mechanism::Intake::RingColours::RED);
+    chassis->setPose(-62.825, 0, 90);
 
     while (true)
     {
