@@ -111,8 +111,11 @@ namespace mechanism
                     // If ring state has changed to detected
                     if (m_ring_state_detector.getChanged() && m_ring_state_detector.getValue())
                     {
+                        if (m_stop_next_ring_flag) {
+                            this->state = IntakeState::DISABLED;
+                        }
                         // If sort is active and color is wrong, remove ring
-                        if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
+                        else if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
                             pros::delay(50);
 
@@ -227,18 +230,9 @@ namespace mechanism
     }
 
     void Intake::stop_next_ring() {
-        pros::Task([this]() {
-            while (true)
-            {
-                mutex.lock();
-                if (m_ring_state_detector.getChanged() && m_ring_state_detector.getValue())
-                {
-                    this->state == IntakeState::DISABLED;
-                }
-                mutex.unlock();
-                pros::delay(20);
-            }
-        });
+        mutex.lock();
+        m_stop_next_ring_flag = true;
+        mutex.unlock();
     }
 
     void Intake::stop_task()

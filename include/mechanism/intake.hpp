@@ -37,6 +37,7 @@ namespace mechanism
         double m_blue_bound;
 
         bool m_sort_enabled;
+        bool m_stop_next_ring_flag = false;
         RingColours m_sort_colour;
         std::vector<RingColours> m_possession = {};
 
