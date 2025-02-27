@@ -228,7 +228,8 @@ namespace mechanism
 
     void Intake::stop_next_ring() {
         pros::Task([this]() {
-            while (true) {
+            while (true)
+            {
                 mutex.lock();
                 if (m_ring_state_detector.getChanged() && m_ring_state_detector.getValue())
                 {
@@ -237,7 +238,7 @@ namespace mechanism
                 mutex.unlock();
                 pros::delay(20);
             }
-        }).remove();
+        });
     }
 
     void Intake::stop_task()

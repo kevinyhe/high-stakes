@@ -40,7 +40,7 @@ namespace config
     inline const char PORT_CLAMP = 'G'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
-        load : 55.0,
+        load : 56.0,
         idle : 20.0,
         prime : 90.0,
         neutral_stake : 175.0
@@ -120,6 +120,8 @@ inline MockIMU mock_IMU(config::PORT_IMU, 360/361.5); // gain factor
 // inline pros::Imu imu(config::PORT_IMU);
 inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
+
+inline pros::Distance wall_reset(15);
 
 inline lemlib::TrackingWheel vertical_tracking(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE);
 inline lemlib::TrackingWheel lateral_tracking(&lateral_rotation, config::HORIZONTAL_TRACKING_WHEEL_DIAMETER, config::HORIZONTAL_TRACKING_WHEEL_DISTANCE);
