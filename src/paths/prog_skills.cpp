@@ -25,7 +25,8 @@ void prog_skills()
     auto &intake = mechanism::Intake::get_instance();
     auto &clamp = mechanism::Clamp::get_instance();
 
-    
+    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
+
     intake.set_state(mechanism::IntakeState::HOOK);
     pros::delay(500);
     intake.set_state(mechanism::IntakeState::DISABLED);
@@ -33,7 +34,7 @@ void prog_skills()
     // clamp first mogo
     chassis->moveToPoint(-48, 0, 1000, {.minSpeed = 20, .earlyExitRange = 8});
     // chassis->swingToPoint(-48, -24, lemlib::DriveSide::LEFT, 3000, {.forwards = false});
-    chassis->moveToPoint(-48, -28, 3000, {.forwards = false, .maxSpeed = 65});
+    chassis->moveToPoint(-48, -28, 3000, {.forwards = false, .maxSpeed = 60});
     clamp.set_autoclamp(true);
     while (chassis->isInMotion() && !clamp.get_value())
     {
@@ -58,7 +59,7 @@ void prog_skills()
     arm.set_state(mechanism::ArmState::LOAD);
     
     // wall stake
-    chassis->moveToPoint(0, -38, 3000, {.forwards=false, .minSpeed = 20, .earlyExitRange = 5});
+    chassis->moveToPoint(4, -38, 3000, {.forwards=false, .minSpeed = 20, .earlyExitRange = 5});
     // chassis->moveToPoint(0, -68, 7000, {.maxSpeed = 90});
     chassis->moveToPose(0, -62.5, 180, 2000, {.lead = 0.3});
     tap();
@@ -105,7 +106,7 @@ void prog_skills()
     chassis->moveToPoint(-48, -10, 2000, {.minSpeed = 72, .earlyExitRange = 4});
     intake.set_state(mechanism::IntakeState::DISABLED);
     arm.set_state(mechanism::ArmState::IDLE);
-    chassis->moveToPoint(-48, 28, 5000, {.forwards = false, .maxSpeed = 55});
+    chassis->moveToPoint(-48, 28, 5000, {.forwards = false, .maxSpeed = 60});
     clamp.set_autoclamp(true);
     while (chassis->isInMotion() && !clamp.get_value())
     {
@@ -131,7 +132,7 @@ void prog_skills()
     arm.set_state(mechanism::ArmState::LOAD);
 
     // wall stake
-    chassis->moveToPoint(0, 38, 3000, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
+    chassis->moveToPoint(4, 38, 3000, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
     // chassis->moveToPoint(0, -68, 7000, {.maxSpeed = 90});
     chassis->moveToPose(0, 62.5, 0, 2000, {.lead = 0.3});
     tap();
@@ -154,7 +155,7 @@ void prog_skills()
     // chassis->swingToPoint(-64, 48, lemlib::DriveSide::RIGHT, 3000, {.minSpeed = 10, .earlyExitRange = 20});
     chassis->moveToPoint(-40, 48, 2000, {.minSpeed = 90, .earlyExitRange = 12});
     // chassis->moveToPoint(-36, 48, 3000, {.minSpeed = 20, .earlyExitRange = 12});
-    chassis->moveToPoint(-65, 48, 1500, {.maxSpeed = 60});
+    chassis->moveToPoint(-65, 48, 1300, {.maxSpeed = 60});
     chassis->waitUntilDone();
     chassis->setPose(-62.25, chassis->getPose().y, chassis->getPose().theta);
     pros::delay(200);
@@ -171,7 +172,6 @@ void prog_skills()
     chassis->waitUntilDone();
     
     pros::delay(200);
-    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
     
     /**
      * THIRD QUARTER
@@ -194,9 +194,9 @@ void prog_skills()
 
     intake.set_state(mechanism::IntakeState::HOOK);
     // first set of rings
-    chassis->moveToPoint(26, -20.5, 3000, {.minSpeed = 5, .earlyExitRange = 6});
+    chassis->moveToPoint(28, -18.5, 3000, {.earlyExitRange = 3});
     // under ladder
-    chassis->moveToPoint(3, -3, 3000, {.maxSpeed = 80,  .minSpeed = 10, .earlyExitRange = 4});
+    chassis->moveToPoint(4, -4, 3000, {.maxSpeed = 80,  .minSpeed = 10, .earlyExitRange = 4});
     pros::delay(700);
     intake.set_state(mechanism::IntakeState::FIRST_HOOK);
     chassis->moveToPoint(24, 24, 3000, {.minSpeed = 72, .earlyExitRange = 4});
@@ -211,13 +211,13 @@ void prog_skills()
     // chassis->setPose(chassis->getPose().x, 61.75, chassis->getPose().theta);
 
     // corner
-    chassis->moveToPoint(63.5, 40, 3000, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
+    chassis->moveToPoint(62.5, 40, 3000, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
     doinker.extend();
-    chassis->moveToPoint(63.5, 62, 1500, {.minSpeed = 20, .earlyExitRange = 5});
+    chassis->moveToPoint(67.5, 62, 1200, {.minSpeed = 20, .earlyExitRange = 5});
     // chassis->moveToPose(62.5, 62, 5, 1500);
     chassis->turnToHeading(-40, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE, .minSpeed=72, .earlyExitRange = 10});
     // intake.set_state(mechanism::IntakeState::FIRST_HOOK);
-    chassis->moveToPoint(72, 72, 1500, {.forwards = false});
+    chassis->moveToPoint(62, 62, 1500, {.forwards = false});
     doinker.retract();
     pros::delay(800);
     intake.set_state(mechanism::IntakeState::REVERSE);
@@ -247,17 +247,18 @@ void prog_skills()
     clamp.retract();
     
     // alliance stakes
-    chassis->moveToPoint(56, -24, 3000, {.minSpeed = 20, .earlyExitRange = 5});
+    chassis->moveToPoint(48, -24, 3000, {.minSpeed = 20, .earlyExitRange = 5});
+    intake.set_state(mechanism::IntakeState::FIRST_HOOK);
     // chassis->moveToPoint(48, -48, 3000);
-    chassis->moveToPoint(64, -48, 2300, {.minSpeed = 20, .earlyExitRange = 2});
+    chassis->moveToPoint(48, -48, 2300, {.minSpeed = 20, .earlyExitRange = 2});
     // chassis->moveToPoint(47, -40, 3000, {.forwards = false, .minSpeed = 30, .earlyExitRange = 4});
     // chassis->turnToHeading(80, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE,.minSpeed = 72, .earlyExitRange = 10});
     // intake.set_state(mechanism::IntakeState::WALL_STAKE);
     // doinker.extend();
-
+    
     // intake.set_state(mechanism::IntakeState::DISABLED);
-
-    chassis->moveToPoint(58, 0, 3000);
+    
+    chassis->moveToPoint(50, 0, 3000);
     chassis->turnToPoint(65, 0, 2000, {.forwards = false});
     chassis->moveToPoint(65, 0, 3000, {.forwards = false});
     chassis->waitUntilDone();
