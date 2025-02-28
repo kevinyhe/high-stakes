@@ -96,7 +96,8 @@ namespace mechanism
         double get_possession_count();
         std::vector<RingColours> get_possession();
 
-        void stop_next_ring();
+        void enable_stop_next_ring();
+        void disable_stop_next_ring();
 
         void start_task();
         void stop_task();

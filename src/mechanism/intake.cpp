@@ -115,7 +115,7 @@ namespace mechanism
                             this->state = IntakeState::DISABLED;
                         }
                         // If sort is active and color is wrong, remove ring
-                        else if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
+                        if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
                             pros::delay(50);
 
@@ -229,9 +229,15 @@ namespace mechanism
             } });
     }
 
-    void Intake::stop_next_ring() {
+    void Intake::enable_stop_next_ring() {
         mutex.lock();
         m_stop_next_ring_flag = true;
+        mutex.unlock();
+    }
+
+    void Intake::disable_stop_next_ring() {
+        mutex.lock();
+        m_stop_next_ring_flag = false;
         mutex.unlock();
     }
 

@@ -10,6 +10,9 @@
  */
 void initialize()
 {
+	chassis->calibrate(); // calibrate sensors
+	mock_IMU.tare();
+	
 	pros::lcd::initialize();
 
 	vertical_rotation.set_data_rate(5);
@@ -44,8 +47,6 @@ void initialize()
 
 	// arm_rotation->reset();
 
-	chassis->calibrate(); // calibrate sensors
-	mock_IMU.tare();
 
 	// pros::Task t_UKFTask(UKFTask, nullptr, "UKFTask");
 
