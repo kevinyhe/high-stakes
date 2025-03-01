@@ -107,7 +107,7 @@ inline lemlib::ExpoDriveCurve throttle_curve(3,    // joystick deadband out of 1
 // input curve for steer input during driver control
 inline lemlib::ExpoDriveCurve steer_curve(3,    // joystick deadband out of 127
                                    10,   // minimum output where drivetrain will move out of 127
-                                   1.019 // expo curve gain
+                                   1.2 // expo curve gain
 );
 
 inline lemlib::Drivetrain drivetrain(&left_motors, &right_motors, config::DRIVE_WHEEL_TRACK, config::DRIVE_WHEEL_DIAMETER, config::DRIVE_RPM, config::DRIVE_HORIZONTAL_DRIFT);

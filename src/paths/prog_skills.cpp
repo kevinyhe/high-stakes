@@ -81,7 +81,7 @@ void prog_skills()
     intake.set_state(mechanism::IntakeState::HOOK);
     // chassis->swingToPoint(-64, -48, lemlib::DriveSide::LEFT, 3000, {.minSpeed = 10, .earlyExitRange = 20});
     chassis->moveToPoint(-40, -48, 2000, {.minSpeed = 90, .earlyExitRange = 12});
-    chassis->moveToPoint(-65, -48, 1300, {.maxSpeed = 60});
+    chassis->moveToPoint(-65, -48, 1600, {.maxSpeed = 50});
     chassis->waitUntilDone();
     chassis->setPose(-61.25, chassis->getPose().y, chassis->getPose().theta);
     pros::delay(200);
@@ -153,7 +153,7 @@ void prog_skills()
     // chassis->swingToPoint(-64, 48, lemlib::DriveSide::RIGHT, 3000, {.minSpeed = 10, .earlyExitRange = 20});
     chassis->moveToPoint(-40, 48, 2000, {.minSpeed = 90, .earlyExitRange = 12});
     // chassis->moveToPoint(-36, 48, 3000, {.minSpeed = 20, .earlyExitRange = 12});
-    chassis->moveToPoint(-65, 48, 1500, {.maxSpeed = 60});
+    chassis->moveToPoint(-65, 48, 1600, {.maxSpeed = 50});
     chassis->waitUntilDone();
     chassis->setPose(-61.25, chassis->getPose().y, chassis->getPose().theta);
     pros::delay(200);
@@ -229,16 +229,21 @@ void prog_skills()
     // blue mogo
     chassis->moveToPoint(37, 26, 3000, {.minSpeed = 70, .earlyExitRange = 4});
     // chassis->swingToPoint(59, -20.5, lemlib::DriveSide::LEFT, 2000, {.minSpeed = 72, .earlyExitRange = 20});
-    chassis->moveToPoint(59, -6.5, 3000, {.forwards = false, .minSpeed = 10, .earlyExitRange = 2});
+    chassis->moveToPoint(52.5, -6.5, 3000, {.forwards = false, .minSpeed = 10, .earlyExitRange = 2});
 
     // intake.set_state(mechanism::IntakeState::FIRST_HOOK);
     chassis->moveToPoint(68, -54, 1500, {.forwards = false, .minSpeed = 20, .earlyExitRange = 5});
     
     // alliance stakes
-    chassis->moveToPoint(52, -31, 3000, {.minSpeed = 20, .earlyExitRange = 5});
+    chassis->moveToPoint(52, -31, 3000, {.minSpeed = 20, .earlyExitRange = 5});     
     // chassis->moveToPoint(48, -48, 3000);
     chassis->moveToPoint(48, -52, 2300, {.minSpeed = 20, .earlyExitRange = 2});
+    intake.set_state(mechanism::IntakeState::HOOK);
+    chassis->waitUntilDone();
+    chassis->moveToPoint(48, -65, 1500, {.maxSpeed = 80});
+    pros::delay(250);
     intake.set_state(mechanism::IntakeState::FIRST_HOOK);
+    chassis->setPose(chassis->getPose().x, -61.25, chassis->getPose().theta);
     // chassis->moveToPoint(47, -40, 3000, {.forwards = false, .minSpeed = 30, .earlyExitRange = 4});
     // chassis->turnToHeading(80, 1000, {.direction = lemlib::AngularDirection::CCW_COUNTERCLOCKWISE,.minSpeed = 72, .earlyExitRange = 10});
     // intake.set_state(mechanism::IntakeState::WALL_STAKE);
@@ -247,13 +252,13 @@ void prog_skills()
     // intake.set_state(mechanism::IntakeState::DISABLED);
 
     chassis->moveToPoint(53, -4, 3000, {.forwards = false, .minSpeed = 10, .earlyExitRange = 4});
-    chassis->moveToPose(76, 0, -90, 1500, {.forwards = false});
+    chassis->moveToPose(70, 0, -90, 1500, {.forwards = false});
     chassis->waitUntilDone();
     intake.set_state(mechanism::IntakeState::HOOK);
     pros::delay(700);
     intake.set_state(mechanism::IntakeState::DISABLED);
 
-    chassis->moveToPoint(31, -31, 2000);
+    chassis->moveToPoint(32, -32, 2000);
     arm.set_state(mechanism::ArmState::NEUTRAL_STAKE);
     chassis->moveToPoint(4, 0, 3000, {.forwards = false, .maxSpeed = 50});
     chassis->waitUntilDone();
