@@ -203,6 +203,11 @@ namespace mechanism
                         m_s_motor->move(0);
                         // pros::lcd::print(6, "HOOK");
                         break;
+                    case IntakeState::SECOND_HOOK:
+                        m_f_motor->move(0);
+                        m_s_motor->move(127);
+                        // pros::lcd::print(6, "HOOK");
+                        break;
                     case IntakeState::WALL_STAKE:
                         m_f_motor->move(-40);
                         m_s_motor->move(-40);

@@ -38,7 +38,7 @@ namespace config
     inline const char PORT_CLAMP = 'G'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
-        load : 55.0,
+        load : 55.5,
         idle : 20.0,
         prime : 90.0,
         neutral_stake : 175.0

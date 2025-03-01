@@ -11,6 +11,7 @@ namespace mechanism
         DISABLED,
         HOOK,
         FIRST_HOOK,
+        SECOND_HOOK,
         WALL_STAKE,
         REVERSE,
         DEJAM
