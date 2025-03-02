@@ -140,7 +140,7 @@ void find_tracking_center(float turnVoltage, uint32_t time)
 void autonomous()
 {
 	// find_tracking_center(80, 10000);
-	blue_mogo();
+	red_mogo();
 
 	// auto &auton_selector = AutonSelector::get_instance();
 	// auton_selector.run_selected_routine();

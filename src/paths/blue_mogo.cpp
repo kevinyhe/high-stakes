@@ -4,7 +4,7 @@
 
 void blue_mogo()
 {
-    chassis->setPose(49, -35.25, -112);
+    chassis->setPose(49, -59.25, -112);
     auto &arm = mechanism::Arm::get_instance();
     auto &intake = mechanism::Intake::get_instance();
     auto &clamp = mechanism::Clamp::get_instance();
@@ -21,13 +21,14 @@ void blue_mogo()
     doinker.retract();
     pros::delay(300);
     // chassis->turnToPoint(13.5, -33.25, 2000, {.forwards = false, .minSpeed = 72, .earlyExitRange = 5});
-    chassis->moveToPoint(13.5, -37.25, 2000, {.forwards = false, .maxSpeed = 80});
+    chassis->moveToPoint(13.5, -37.25, 2000, {.forwards = false, .maxSpeed = 70});
     clamp.set_autoclamp(true);
     while (chassis->isInMotion() && !clamp.get_value())
     {
         pros::delay(20);
     }
     chassis->cancelMotion();
+    pros::delay(300);
     clamp.extend();
 
     intake.set_state(mechanism::IntakeState::HOOK);

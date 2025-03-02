@@ -102,6 +102,12 @@ namespace mechanism
                         {
                             m_possession.push_back(m_colour_state_detector.getValue()); // Add new ring to possession
                         }
+                        if (m_stop_next_ring_flag && this->get_current_ring_colour() != m_sort_colour)
+                        {
+                            m_stop_next_ring_flag = false;
+                            // stop intake
+                            this->state = IntakeState::DISABLED;
+                        }
                     }
 
                     std::int32_t distance = m_distance_sensor->get_distance(); // Grab Distance from distance sensor
@@ -111,12 +117,7 @@ namespace mechanism
                     // If ring state has changed to detected
                     if (m_ring_state_detector.getChanged() && m_ring_state_detector.getValue())
                     {
-                        if (m_stop_next_ring_flag && this->get_current_ring_colour() != m_sort_colour)
-                        {
-                            m_stop_next_ring_flag = false;
-                            // stop intake
-                            this->state = IntakeState::DISABLED;
-                        }
+
                         // If sort is active and color is wrong, remove ring
                         if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
