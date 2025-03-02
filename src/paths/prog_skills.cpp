@@ -96,8 +96,6 @@ void prog_skills()
     pros::delay(200);
     clamp.set_autoclamp(false);
     clamp.retract();
-    chassis->waitUntilDone();
-
     pros::delay(200);
 
     // second mogo
@@ -240,8 +238,8 @@ void prog_skills()
     chassis->moveToPoint(48, -52, 2300, {.minSpeed = 20, .earlyExitRange = 2});
     intake.set_state(mechanism::IntakeState::HOOK);
     chassis->waitUntilDone();
-    chassis->moveToPoint(48, -65, 1500, {.maxSpeed = 80});
-    pros::delay(250);
+    chassis->moveToPoint(48, -65, 1500);
+    pros::delay(400);
     intake.set_state(mechanism::IntakeState::FIRST_HOOK);
     chassis->setPose(chassis->getPose().x, -61.25, chassis->getPose().theta);
     // chassis->moveToPoint(47, -40, 3000, {.forwards = false, .minSpeed = 30, .earlyExitRange = 4});
@@ -255,12 +253,12 @@ void prog_skills()
     chassis->moveToPose(70, 0, -90, 1500, {.forwards = false});
     chassis->waitUntilDone();
     intake.set_state(mechanism::IntakeState::HOOK);
-    pros::delay(700);
+    pros::delay(1000);
     intake.set_state(mechanism::IntakeState::DISABLED);
 
     chassis->moveToPoint(32, -32, 2000);
     arm.set_state(mechanism::ArmState::NEUTRAL_STAKE);
-    chassis->moveToPoint(4, 0, 3000, {.forwards = false, .maxSpeed = 50});
+    chassis->moveToPoint(4, 0, 3000, {.forwards = false, .maxSpeed = 55});
     chassis->waitUntilDone();
     arm.set_state(mechanism::ArmState::LOAD);
     chassis->tank(30, 30);

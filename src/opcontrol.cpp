@@ -105,8 +105,8 @@ void opcontrol()
     auto &intake = mechanism::Intake::get_instance();
 
     clamp.set_autoclamp(false);
-    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
-    chassis->setPose(-62.825, 0, 90);
+    // intake.enable_sort(mechanism::Intake::RingColours::BLUE);
+    // chassis->setPose(-62.825, 0, 90);
 
     while (true)
     {

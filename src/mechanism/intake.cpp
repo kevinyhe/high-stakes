@@ -111,13 +111,16 @@ namespace mechanism
                     // If ring state has changed to detected
                     if (m_ring_state_detector.getChanged() && m_ring_state_detector.getValue())
                     {
-                        if (m_stop_next_ring_flag) {
+                        if (m_stop_next_ring_flag && this->get_current_ring_colour() != m_sort_colour)
+                        {
+                            m_stop_next_ring_flag = false;
+                            // stop intake
                             this->state = IntakeState::DISABLED;
                         }
                         // If sort is active and color is wrong, remove ring
                         if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
-                            pros::delay(50);
+                            pros::delay(55);
 
                             // m_pSort->extend();
                             this->dejam_start_time = pros::millis();
@@ -141,18 +144,18 @@ namespace mechanism
                     m_optical_sensor->set_led_pwm(0); // Turn off light
                 }
 
-                // get arm instance
+                // get arm instance 
                 auto& arm = Arm::get_instance();
                 
                 // Check if the motors are at 0 velocity
-                if (std::abs(m_s_motor->get_actual_velocity(1)) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
+                if (std::abs(m_s_motor->get_actual_velocity()) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::FIRST_HOOK && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
                 {
                     // If the motors are at 0 velocity, start or update the timer
                     if (zero_velocity_start_time == 0)
                     {
                         zero_velocity_start_time = pros::millis();
                     }
-                    else if (pros::millis() - zero_velocity_start_time > 400)
+                    else if (pros::millis() - zero_velocity_start_time > 1000)
                     {
                         // If the motors have been at 0 velocity for more than 500 ms, activate dejam state
                         this->dejam_start_time = pros::millis();
