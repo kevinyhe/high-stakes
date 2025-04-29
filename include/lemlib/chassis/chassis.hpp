@@ -923,9 +923,10 @@ class Chassis {
         bool motionQueued = false;
 
         float distTraveled = 0;
-
+public:
         ControllerSettings lateralSettings;
         ControllerSettings angularSettings;
+        protected:
         Drivetrain drivetrain;
         OdomSensors sensors;
         DriveCurve* throttleCurve;

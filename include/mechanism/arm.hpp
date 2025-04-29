@@ -26,7 +26,7 @@ namespace mechanism
     class Arm
     {
     private:
-        std::shared_ptr<pros::Motor> motors;
+        std::shared_ptr<pros::MotorGroup> motors;
         std::shared_ptr<pros::Rotation> arm_rotation_sensor;
 
         std::shared_ptr<PID> arm_pid;
@@ -42,7 +42,7 @@ namespace mechanism
 
         static std::unique_ptr<Arm> instance;
         // Private constructor/destructor
-        explicit Arm(std::shared_ptr<pros::Motor> motors,
+        explicit Arm(std::shared_ptr<pros::MotorGroup> motors,
             std::shared_ptr<pros::Rotation> arm_rotation_sensor,
             std::shared_ptr<PID> arm_pid,
             ArmTargetConfig target_config,
@@ -58,7 +58,7 @@ namespace mechanism
         Arm &operator=(Arm &&) = delete;
 
         // Singleton accessor
-        static void initialize(std::shared_ptr<pros::Motor> motors,
+        static void initialize(std::shared_ptr<pros::MotorGroup> motors,
                                std::shared_ptr<pros::Rotation> arm_rotation_sensor,
                                std::shared_ptr<PID> arm_pid,
                                ArmTargetConfig arm_target_config,
@@ -91,5 +91,6 @@ namespace mechanism
         ArmState get_state();
         bool is_loading();
         bool is_primed();
+        void set_rotation_value(double v);
     };
 } // namespace mechanism

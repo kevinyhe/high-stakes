@@ -6,7 +6,7 @@ namespace mechanism
 {
     std::unique_ptr<Arm> Arm::instance = nullptr;
 
-    Arm::Arm(std::shared_ptr<pros::Motor> motors,
+    Arm::Arm(std::shared_ptr<pros::MotorGroup> motors,
              std::shared_ptr<pros::Rotation> arm_rotation_sensor,
              std::shared_ptr<PID> arm_pid,
              ArmTargetConfig target_config,
@@ -17,10 +17,7 @@ namespace mechanism
           target_config(target_config),
           kG(kG)
     {
-        if (!motors->is_installed())
-        {
-            // ERROR_TEXT("Arm motor(s) unplugged!");
-        }
+
         if (!arm_rotation_sensor->is_installed())
         {
             // ERROR("Arm rotation sensor is not detected on port %d!", arm_rotation_sensor->get_port());
@@ -43,7 +40,7 @@ namespace mechanism
         }
 
         arm_rotation_sensor->set_data_rate(5);
-        arm_rotation_sensor->set_position(2000);
+        arm_rotation_sensor->set_position(0);
 
         task_on_flag = true;
         mutex.unlock();
@@ -61,7 +58,9 @@ namespace mechanism
                 }
                 mutex.unlock();
 
-                double current_angle = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
+                pros::lcd::print(3, "rot: %d", arm_rotation_sensor->get_position());
+
+                double current_angle = (arm_rotation_sensor->get_position() / 100.0);
 
                 double target_angle = INFINITY;
                 switch (state) {
@@ -82,19 +81,21 @@ namespace mechanism
                 // Access Intake singleton directly
                 auto& intake = Intake::get_instance();
                 // relieve stress on motors for idle position
-                if (target_angle == target_config.idle && current_angle < target_config.idle + 15) {
+                if (target_angle == target_config.idle && current_angle < target_config.idle + 50) {
                     motors->move(0);
                 }
-                else if (target_angle == target_config.neutral_stake) {
+                else if (target_angle == target_config.neutral_stake && current_angle < target_config.neutral_stake - 50) {
                     motors->move(127);
                 }
                 else if (target_angle != INFINITY) {
                     double output = arm_pid->calculate(current_angle, target_angle);
                     // if (output < 50) {
-                        motors->move(output + (kG * sin((current_angle+35) * M_PI / 180)));
-                    // } else {
+                        motors->move(output + (kG * cos((current_angle-50) * M_PI / 180.0)));
+                        pros::lcd::print(5, "output: %f", kG * cos((current_angle-50) * M_PI / 180.0));
+                        // motors->move(output);
+                        // } else {
                         // motors->move(127);
-                    // }
+                        // }
                 } 
                 pros::delay(20);
             } });
@@ -130,21 +131,23 @@ namespace mechanism
 
     bool mechanism::Arm::is_loading()
     {
-        double current = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
-
-        if (current > 180.0)
-        {
-            current = 0.0;
-        }
+        double current = (arm_rotation_sensor->get_position() / 100.0);
 
         return std::abs(current - target_config.load) < 4;
     }
 
     bool mechanism::Arm::is_primed()
     {
-        double current = (normalize((arm_rotation_sensor->get_position() / 100.0), 0, 360));
+        double current = (arm_rotation_sensor->get_position() / 100.0);
 
         return std::abs(current - target_config.prime) < 15;
     }
+    void mechanism::Arm::set_rotation_value(double v) {
+        mutex.lock();
+
+        arm_rotation_sensor->set_position(v * 100.0);
+        mutex.unlock();
+    }
+
 
 } // namespace mechanism

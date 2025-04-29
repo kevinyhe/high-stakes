@@ -21,14 +21,13 @@ void initialize()
 	vertical_rotation.set_position(0);
 	lateral_rotation.set_position(0);
 
-	auto intake_f_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE_FIRST);
-	auto intake_s_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE_SECOND);
+	auto intake_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE);
 	auto intake_optical = std::make_shared<pros::Optical>(config::PORT_RING_SORT_OPTICAL);
 	auto intake_distance = std::make_shared<pros::Distance>(config::PORT_RING_SORT_DISTANCE);
 
-	mechanism::Intake::initialize(intake_f_motor, intake_s_motor, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
+	mechanism::Intake::initialize(intake_motor, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
 	
-	auto arm_motors = std::make_shared<pros::Motor>(config::PORT_ARM);
+	auto arm_motors = std::make_shared<pros::MotorGroup>(config::PORT_ARM);
 	auto arm_rotation = std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION);
 		
 	arm_motors->set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -58,18 +57,16 @@ void initialize()
             pros::lcd::print(1, "Y: %f", chassis->getPose().y); // y
             pros::lcd::print(2, "Theta: %f", chassis->getPose().theta); // heading
 
-			pros::lcd::print(3, "%f", wall_reset.get() * 0.0393701 * sin(chassis->getPose(true).theta));
-
 			// log position telemetry
-			lemlib::telemetrySink()
-				->info("Chassis pose: {}", chassis->getPose());
-			// delay to save resources
-			std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
+			// lemlib::telemetrySink()
+			// 	->info("Chassis pose: {}", chassis->getPose());
+			// // delay to save resources
+			// std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
 
-				/*if (i % 250 == 0) {
-				  std::cout << "\\right]\n\\left[" ;
-				} */
-			std::cout.flush();
+			// 	/*if (i % 250 == 0) {
+			// 	  std::cout << "\\right]\n\\left[" ;
+			// 	} */
+			// std::cout.flush();
 			
 			pros::delay(50);
 		}
@@ -84,63 +81,20 @@ void initialize()
 void disabled() {
 	
 }
-
-void find_tracking_center(float turnVoltage, uint32_t time)
-{
-	chassis->setPose(0, 0, 0);
-	unsigned long n = 0;
-	float heading;
-
-	std::cout << std::fixed << "\033[1mCopy this:\033[0m\n\\left[";
-	chassis->setBrakeMode(pros::E_MOTOR_BRAKE_BRAKE);
-	chassis->tank(-turnVoltage, turnVoltage);
-
-	std::ostringstream out;
-
-	auto end_time = time + pros::millis();
-
-	std::vector<float> thetas;
-
-	int i = 0;
-
-	while (pros::millis() < end_time && i++ < 12000)
-	{
-		std::cout << "\\left(" << chassis->getPose().x << "," << chassis->getPose().y << "\\right),";
-		thetas.emplace_back(chassis->getPose().theta);
-
-		/*if (i % 250 == 0) {
-		  std::cout << "\\right]\n\\left[" ;
-		} */
-		if (i % 50 == 0)
-		{
-			std::cout.flush();
-		}
-		pros::delay(20);
-	}
-	chassis->cancelAllMotions();
-	std::cout << "\b\\right]" << std::endl;
-
-	pros::delay(1000);
-	std::cout << "\\theta_{t}=\\left[";
-	i = 0;
-
-	for (auto &theta : thetas)
-	{
-		i++;
-		std::cout << theta << ",";
-		if (i % 50 == 0)
-			std::cout.flush();
-		pros::delay(20);
-	}
-	std::cout << "\b\\right]" << std::endl;
-
-	std::cout << "Go to https://www.desmos.com/calculator/rxdoxxil1j to solve for offsets." << std::endl;
-}
-
 void autonomous()
 {
-	// find_tracking_center(80, 10000);
-	red_mogo();
+	// chassis->setPose(0, 0, 0);
+	// chassis->turnToHeading(180, 3000);
+	// chassis->turnToHeading(0, 3000);
+	// chassis->turnToHeading(90, 3000);
+	// chassis->turnToHeading(0, 3000);
+	// chassis->moveToPoint(24, 24, 3000, {.forwards = true});
+	// chassis->moveToPose(0, 0, 0, 3000, {.forwards = false});
+	// chassis->moveToPoint(0, 24, 3000, {.minSpeed = 127, .earlyExitRange = 12});
+	// chassis->moveToPoint(0, 48, 3000, {.forwards = false});
+	// chassis->moveToPoint(0, 24, 3000, {.minSpeed = 127, .earlyExitRange = 12});
+	// chassis->moveToPoint(0, 0, 3000, {.forwards = false});
+	red_awp_safe();
 
 	// auto &auton_selector = AutonSelector::get_instance();
 	// auton_selector.run_selected_routine();
@@ -188,11 +142,11 @@ void competition_initialize() {
 			break;
 		case 2:
 			controller.print(0, 0, "Red Ring   ");
-			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::RED_RING);
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::RED_AWP_SAFE);
 			break;
 		case 3:
 			controller.print(0, 0, "Blue Ring  ");
-			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::BLUE_RING);
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::BLUE_AWP_SAFE);
 			break;
 		case 4:
 			controller.print(0, 0, "Prog Skills");
