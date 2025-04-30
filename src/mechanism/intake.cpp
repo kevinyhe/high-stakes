@@ -149,7 +149,7 @@ namespace mechanism
                 auto& arm = Arm::get_instance();
                 
                 // Check if the motors are at 0 velocity
-                if (std::abs(m_motor->get_actual_velocity()) < 20 && this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
+                if (std::abs(m_motor->get_actual_velocity()) < 20 && m_motor->get_current_draw() > 2000 &&  this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
                 {
                     // If the motors are at 0 velocity, start or update the timer
                     if (zero_velocity_start_time == 0)
