@@ -4,7 +4,8 @@
 #include "lemlib/timer.hpp"
 #include "lemlib/util.hpp"
 
-namespace lemlib {
+namespace lemlib
+{
     void ModifiedChassis::moveToPose(float x, float y, float theta, int timeout, MoveToPoseParams params, bool async)
     {
         // take the mutex
@@ -45,10 +46,13 @@ namespace lemlib {
         Timer timer(timeout);
         bool close = false;
         bool lateralSettled = false;
-        bool prevSameSide = false;
         float prevLateralOut = 0; // previous lateral power
         float prevAngularOut = 0; // previous angular power
         const int compState = pros::competition::get_status();
+
+        // Boomerang controller parameters
+        const float dLead = params.lead;    // Carrot point lead parameter
+        int dir = params.forwards ? 1 : -1; // Direction multiplier
 
         // main loop
         while (!timer.isDone() &&
@@ -66,7 +70,7 @@ namespace lemlib {
             const float distTarget = pose.distance(target);
 
             // check if the robot is close enough to the target to start settling
-            if (distTarget < 3 && close == false)
+            if (distTarget < 5 && close == false)
             {
                 close = true;
                 params.maxSpeed = fmax(fabs(prevLateralOut), 90);
@@ -76,34 +80,68 @@ namespace lemlib {
             if (lateralLargeExit.getExit() && lateralSmallExit.getExit())
                 lateralSettled = true;
 
-            // calculate the carrot point
-            Pose carrot = target - Pose(cos(target.theta), sin(target.theta)) * params.lead * distTarget;
-            if (close)
-                carrot = target; // settling behavior
+            // calculate the carrot point using boomerang controller approach
+            Pose carrot(0,0,0);
+            if (!close)
+            {
+                // Boomerang-style carrot point calculation
+                float h = distTarget;
+                carrot.x = target.x - (h * sin(target.theta) * dLead);
+                carrot.y = target.y - (h * cos(target.theta) * dLead);
+                carrot.theta = target.theta;
+            }
+            else
+            {
+                carrot = target; // Use target directly when settling
+            }
 
-            // calculate if the robot is on the same side as the carrot point
-            const bool robotSide =
-                (pose.y - target.y) * -sin(target.theta) <= (pose.x - target.x) * cos(target.theta) + params.earlyExitRange;
-            const bool carrotSide = (carrot.y - target.y) * -sin(target.theta) <=
-                                    (carrot.x - target.x) * cos(target.theta) + params.earlyExitRange;
-            const bool sameSide = robotSide == carrotSide;
-            // exit if close
-            if (!sameSide && prevSameSide && close && params.minSpeed != 0)
-                break;
-            prevSameSide = sameSide;
+            // Calculate adjusted target based on current heading
+            float adjHeading = pose.theta;
+            if (adjHeading > M_PI)
+                adjHeading = -(2 * M_PI - adjHeading);
+            float m = tan(adjHeading); // Slope of the robot's heading line
+
+            // Determine which side of the line the robot is on
+            float sideCheck;
+            if (close)
+            {
+                // When close, calculate projection point on the line through robot with robot heading
+                float tx = (m * (target.y - pose.y + pose.x * m + target.x / m)) / (m * m + 1);
+                float ty = m * (tx - pose.x) + pose.y;
+
+                // Determine side (-1 or 1)
+                int side = pose.y < (-1 / m) * (pose.x - tx) + ty ? 1 : -1;
+                if (side == 0)
+                    side = -1;
+                if (adjHeading < 0)
+                    side = -side;
+                dir = side * (params.forwards ? 1 : -1);
+            }
+            else
+            {
+                // When far, determine side based on carrot point
+                int side = pose.y < (-1 / m) * (pose.x - carrot.x) + carrot.y ? 1 : -1;
+                if (side == 0)
+                    side = -1;
+                if (adjHeading < 0)
+                    side = -side;
+                dir = side * (params.forwards ? 1 : -1);
+            }
 
             // calculate error
             const float adjustedRobotTheta = params.forwards ? pose.theta : pose.theta + M_PI;
             const float angularError =
                 close ? angleError(adjustedRobotTheta, target.theta) : angleError(adjustedRobotTheta, pose.angle(carrot));
+
+            // Calculate lateral error with boomerang-style modifications
             float lateralError = pose.distance(carrot);
-            // only use cos when settling
-            // otherwise just multiply by the sign of cos
-            // maxSlipSpeed takes care of lateralOut
             if (close)
                 lateralError *= cos(angleError(pose.theta, pose.angle(carrot)));
             else
                 lateralError *= sgn(cos(angleError(pose.theta, pose.angle(carrot))));
+
+            // Apply direction multiplier from boomerang controller
+            lateralError *= dir;
 
             // update exit conditions
             lateralSmallExit.update(lateralError);
@@ -125,23 +163,24 @@ namespace lemlib {
             if (!close)
                 lateralOut = slew(lateralOut, prevLateralOut, lateralSettings.slew);
 
-            // constrain lateral output by the max speed it can travel at without
-            // slipping
+            // constrain lateral output by the max speed it can travel at without slipping
             const float radius = 1 / fabs(getCurvature(pose, carrot));
             const float maxSlipSpeed(sqrt(params.horizontalDrift * radius * 9.8));
             lateralOut = std::clamp(lateralOut, -maxSlipSpeed, maxSlipSpeed);
-            // prioritize angular movement over lateral movement
-            const float overturn = fabs(angularOut) + fabs(lateralOut) - params.maxSpeed;
-            if (overturn > 0)
-                lateralOut -= lateralOut > 0 ? overturn : -overturn;
 
-            // prevent moving in the wrong direction
+            // Boomerang-style combined speed limiting
+            if (std::abs(lateralOut) + std::abs(angularOut) > params.maxSpeed)
+            {
+                lateralOut = (params.maxSpeed - std::abs(angularOut)) * sgn(lateralOut);
+            }
+
+            // prevent moving in the wrong direction (keep existing logic)
             if (params.forwards && !close)
                 lateralOut = std::fmax(lateralOut, 0);
             else if (!params.forwards && !close)
                 lateralOut = std::fmin(lateralOut, 0);
 
-            // constrain lateral output by the minimum speed
+            // constrain lateral output by the minimum speed    
             if (params.forwards && lateralOut < fabs(params.minSpeed) && lateralOut > 0)
                 lateralOut = fabs(params.minSpeed);
             if (!params.forwards && -lateralOut < fabs(params.minSpeed) && lateralOut < 0)
@@ -151,7 +190,7 @@ namespace lemlib {
             prevAngularOut = angularOut;
             prevLateralOut = lateralOut;
 
-            // ratio the speeds to respect the max speed
+            // ratio the speeds to respect the max speed (keep existing logic)
             float leftPower = lateralOut + angularOut;
             float rightPower = lateralOut - angularOut;
             const float ratio = std::max(std::fabs(leftPower), std::fabs(rightPower)) / params.maxSpeed;
@@ -176,5 +215,4 @@ namespace lemlib {
         distTraveled = -1;
         this->endMotion();
     }
-
 } // namespace lemlib

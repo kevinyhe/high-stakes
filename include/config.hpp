@@ -25,7 +25,7 @@ namespace config
     inline const double DRIVE_WHEEL_TRACK = 10.375;      
     inline const double DRIVE_GEAR_RATIO = 36.0 / 48.0; 
     inline const int DRIVE_RPM = 450;                 
-    inline const int DRIVE_HORIZONTAL_DRIFT = 2; // coefficient of friction
+    inline const int DRIVE_HORIZONTAL_DRIFT = 4; // coefficient of friction
     // subsystems
     inline const char PORT_POTENTIOMETER = 'H';
     inline const int8_t PORT_INTAKE = -6;
@@ -34,7 +34,7 @@ namespace config
     inline const int8_t PORT_ARM_ROTATION = 5;
 
     inline const char PORT_DOINKER = 'B';
-    inline const char PORT_INTAKE_LIFT = 'F'; 
+    inline const char PORT_INTAKE_LIFT = 'C'; 
     inline const char PORT_CLAMP = 'A'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
