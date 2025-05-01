@@ -34,14 +34,15 @@ namespace config
     inline const int8_t PORT_ARM_ROTATION = 5;
 
     inline const char PORT_DOINKER = 'B';
-    inline const char PORT_INTAKE_LIFT = 'C'; 
+    inline const char PORT_INTAKE_LIFT = 'F'; 
     inline const char PORT_CLAMP = 'A'; 
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
         load : 66.25,
         idle : 0.0,
         prime : 140.0,
-        neutral_stake : 470.0
+        neutral_stake : 470.0,
+        alliance_stake : 390.0,
     };
     inline const PIDParameters PARAMS_ARM_PID = {
         kP : 1.2,
@@ -84,7 +85,7 @@ namespace config
     inline const double ANGULAR_LARGE_ERROR_TIMEOUT = 400; 
     inline const double ANGULAR_SLEW = 0.0; 
 
-    inline const int8_t PORT_RING_SORT_OPTICAL = 0;
+    inline const int8_t PORT_RING_SORT_OPTICAL = 14;
     inline const int8_t PORT_RING_SORT_DISTANCE = 0;
 
     inline const int8_t PORT_CLAMP_DISTANCE = 12;

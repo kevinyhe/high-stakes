@@ -12,6 +12,7 @@ namespace mechanism
         double idle;
         double prime;
         double neutral_stake;
+        double alliance_stake;
     };
 
     enum class ArmState
@@ -20,7 +21,8 @@ namespace mechanism
         LOAD,
         IDLE,
         PRIME,
-        NEUTRAL_STAKE
+        NEUTRAL_STAKE,
+        ALLIANCE_STAKE,
     };
 
     class Arm

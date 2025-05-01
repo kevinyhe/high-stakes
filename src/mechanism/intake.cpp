@@ -109,6 +109,8 @@ namespace mechanism
                             this->state = IntakeState::DISABLED;
                         }
                     }
+                    // print ring colour to pros lcd
+                    pros::lcd::print(6, "Ring Colour: %d", static_cast<int>(m_colour_state_detector.getValue()));
 
                     std::int32_t distance = m_distance_sensor->get_distance(); // Grab Distance from distance sensor
 

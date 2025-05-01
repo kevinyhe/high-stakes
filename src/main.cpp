@@ -83,17 +83,6 @@ void disabled() {
 }
 void autonomous()
 {
-	// chassis->setPose(0, 0, 0);
-	// chassis->turnToHeading(180, 3000);
-	// chassis->turnToHeading(0, 3000);
-	// chassis->turnToHeading(90, 3000);
-	// chassis->turnToHeading(0, 3000);
-	// chassis->moveToPoint(24, 24, 3000, {.forwards = true});
-	// chassis->moveToPose(0, 0, 0, 3000, {.forwards = false});
-	// chassis->moveToPoint(0, 24, 3000, {.minSpeed = 127, .earlyExitRange = 12});
-	// chassis->moveToPoint(0, 48, 3000, {.forwards = false});
-	// chassis->moveToPoint(0, 24, 3000, {.minSpeed = 127, .earlyExitRange = 12});
-	// chassis->moveToPoint(0, 0, 3000, {.forwards = false});
 	red_awp_safe();
 
 	// auto &auton_selector = AutonSelector::get_instance();
