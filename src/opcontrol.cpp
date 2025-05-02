@@ -94,7 +94,11 @@ void control_doinker(pros::Controller controller)
 {
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT))
     {
-        doinker.toggle();
+        doinker_right.toggle();
+    }
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT))
+    {
+        doinker_left.toggle();
     }
 }
 
@@ -105,6 +109,7 @@ void opcontrol()
     auto &intake = mechanism::Intake::get_instance();
 
     clamp.set_autoclamp(false);
+    intake.enable_sort(mechanism::Intake::RingColours::BLUE);
     // chassis->setPose(-62.825, 0, 90);
 
     while (true)

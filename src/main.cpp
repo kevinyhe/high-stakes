@@ -83,7 +83,8 @@ void disabled() {
 }
 void autonomous()
 {
-	red_awp_safe();
+	// red_awp_safe();
+	red_mogo();
 
 	// auto &auton_selector = AutonSelector::get_instance();
 	// auton_selector.run_selected_routine();

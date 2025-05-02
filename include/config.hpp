@@ -33,7 +33,8 @@ namespace config
     inline const std::initializer_list<int8_t> PORT_ARM = {7, -8};
     inline const int8_t PORT_ARM_ROTATION = 5;
 
-    inline const char PORT_DOINKER = 'B';
+    inline const char PORT_DOINKER_RIGHT = 'B';
+    inline const char PORT_DOINKER_LEFT = 'G';
     inline const char PORT_INTAKE_LIFT = 'F'; 
     inline const char PORT_CLAMP = 'A'; 
 
@@ -67,7 +68,7 @@ namespace config
     inline const double LINEAR_KI = 0.0;
     inline const double LINEAR_KD = 35.0;
 
-    inline const double LINEAR_WINDUP = 5.5; 
+    inline const double LINEAR_WINDUP = 0; 
     inline const double LINEAR_SMALL_ERROR = 0.5;
     inline const double LINEAR_SMALL_ERROR_TIMEOUT = 100;
     inline const double LINEAR_LARGE_ERROR = 2.0; 
@@ -117,7 +118,8 @@ inline pros::Rotation vertical_rotation(config::PORT_VERTICAL_ROTATION);
 inline pros::Rotation lateral_rotation(config::PORT_LATERAL_ROTATION);
 inline MockIMU mock_IMU(config::PORT_IMU, 360.0/356.8); // gain factor
 // inline pros::Imu mock_IMU(config::PORT_IMU);
-inline Pneumatic doinker = Pneumatic(config::PORT_DOINKER);
+inline Pneumatic doinker_right = Pneumatic(config::PORT_DOINKER_RIGHT);
+inline Pneumatic doinker_left = Pneumatic(config::PORT_DOINKER_LEFT);
 inline Pneumatic intake_lift = Pneumatic(config::PORT_INTAKE_LIFT);
 
 inline lemlib::TrackingWheel vertical_tracking(&vertical_rotation, config::VERTICAL_TRACKING_WHEEL_DIAMETER, config::VERTICAL_TRACKING_WHEEL_DISTANCE);

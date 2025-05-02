@@ -111,6 +111,7 @@ namespace mechanism
                     }
                     // print ring colour to pros lcd
                     pros::lcd::print(6, "Ring Colour: %d", static_cast<int>(m_colour_state_detector.getValue()));
+                    pros::lcd::print(8, "Possession: %d", m_possession.size()); // debug info
 
                     std::int32_t distance = m_distance_sensor->get_distance(); // Grab Distance from distance sensor
 
@@ -123,7 +124,25 @@ namespace mechanism
                         // If sort is active and color is wrong, remove ring
                         if (m_sort_enabled && this->get_current_ring_colour() == m_sort_colour)
                         {
-                            pros::delay(55);
+                            const double HOOK_RADIUS = 1.2;      // inches
+                            const double TRAVEL_DISTANCE = 7.0;  // inches
+                            const double GEAR_RATIO = 1.0;       // Adjust if using gearing
+                            
+                            // Safety check - avoid division by zero
+
+                            double motor_velocity = std::abs(m_motor->get_actual_velocity()); // Get motor velocity
+                            if (motor_velocity < 1)
+                            {
+                                motor_velocity = 1; // Set to a small value to avoid division by zero
+                            }
+                            
+                            // Calculate angle needed in radians
+                            double angle_radians = TRAVEL_DISTANCE / HOOK_RADIUS;
+                            double revolutions = angle_radians / (2 * M_PI);
+                            double time_minutes = revolutions / (std::abs(motor_velocity) / GEAR_RATIO);
+                            int time_ms = static_cast<int>(time_minutes * 60 * 1000);
+                            pros::lcd::print(7, "Hook time: %d ms", time_ms); // Optional debug info
+                            pros::delay(time_ms);
 
                             // m_pSort->extend();
                             this->dejam_start_time = pros::millis();
@@ -150,27 +169,28 @@ namespace mechanism
                 // get arm instance 
                 auto& arm = Arm::get_instance();
                 
-                // Check if the motors are at 0 velocity
-                if (std::abs(m_motor->get_actual_velocity()) < 20 && m_motor->get_current_draw() > 2000 &&  this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
-                {
-                    // If the motors are at 0 velocity, start or update the timer
-                    if (zero_velocity_start_time == 0)
-                    {
-                        zero_velocity_start_time = pros::millis();
-                    }
-                    else if (pros::millis() - zero_velocity_start_time > 1000)
-                    {
-                        // If the motors have been at 0 velocity for more than 500 ms, activate dejam state
-                        this->dejam_start_time = pros::millis();
-                        this->pre_dejam_state = this->state == IntakeState::DEJAM ? IntakeState::DISABLED : this->state;
-                        this->state = IntakeState::DEJAM;
-                    }
-                }
-                else
-                {
-                    // If the motors are not at 0 velocity, reset the timer
-                    zero_velocity_start_time = 0;
-                }
+                // // Check if the motors are at 0 velocity
+                // if (std::abs(m_motor->get_actual_velocity()) < 20 && m_motor->get_current_draw() > 2000 &&  this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
+                // {
+                //     // If the motors are at 0 velocity, start or update the timer
+                //     if (zero_velocity_start_time == 0)
+                //     {
+                //         zero_velocity_start_time = pros::millis();
+                //     }
+                //     else if (pros::millis() - zero_velocity_start_time > 1000)
+                //     {
+                //         // If the motors have been at 0 velocity for more than 500 ms, activate dejam state
+                //         this->dejam_start_time = pros::millis();
+                //         this->pre_dejam_state = this->state == IntakeState::DEJAM ? IntakeState::DISABLED : this->state;
+                //         this->state = IntakeState::DEJAM;
+                //         zero_velocity_start_time = 0; // reset timer
+                //     }
+                // }
+                // else
+                // {
+                //     // If the motors are not at 0 velocity, reset the timer
+                //     zero_velocity_start_time = 0;
+                // }
 
                 // If jammed for a certain amount of time return to initial state
                 if (this->state == IntakeState::DEJAM && pros::millis() - this->dejam_start_time > 200)
