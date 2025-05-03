@@ -74,6 +74,8 @@ namespace mechanism
                     break;
                     case ArmState::PRIME: target_angle = target_config.prime;
                      break;
+                    case ArmState::TOUCH: target_angle = target_config.touch;
+                     break;
                     case ArmState::ALLIANCE_STAKE:
                         target_angle = target_config.alliance_stake;
                     default:

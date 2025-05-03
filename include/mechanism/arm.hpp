@@ -13,6 +13,7 @@ namespace mechanism
         double prime;
         double neutral_stake;
         double alliance_stake;
+        double touch;
     };
 
     enum class ArmState
@@ -20,6 +21,7 @@ namespace mechanism
         DISABLED,
         LOAD,
         IDLE,
+        TOUCH,
         PRIME,
         NEUTRAL_STAKE,
         ALLIANCE_STAKE,

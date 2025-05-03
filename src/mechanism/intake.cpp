@@ -153,28 +153,28 @@ namespace mechanism
                     m_optical_sensor->set_led_pwm(0); // Turn off light
                 }
 
-                // Check if the motors are at 0 velocity
-                if (std::abs(m_motor->get_actual_velocity()) < 20 && m_motor->get_current_draw() > 2000 &&  this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
-                {
-                    // If the motors are at 0 velocity, start or update the timer
-                    if (zero_velocity_start_time == 0)
-                    {
-                        zero_velocity_start_time = pros::millis();
-                    }
-                    else if (pros::millis() - zero_velocity_start_time > 1000)
-                    {
-                        // If the motors have been at 0 velocity for more than 500 ms, activate dejam state
-                        this->dejam_start_time = pros::millis();
-                        this->pre_dejam_state = this->state == IntakeState::DEJAM ? IntakeState::DISABLED : this->state;
-                        this->state = IntakeState::DEJAM;
-                        zero_velocity_start_time = 0; // reset timer
-                    }
-                }
-                else
-                {
-                    // If the motors are not at 0 velocity, reset the timer
-                    zero_velocity_start_time = 0;
-                }
+                // // Check if the motors are at 0 velocity
+                // if (std::abs(m_motor->get_actual_velocity()) < 20 && m_motor->get_current_draw() > 2000 &&  this->state != IntakeState::DISABLED && this->state != IntakeState::DEJAM && arm.get_state() != ArmState::LOAD)
+                // {
+                //     // If the motors are at 0 velocity, start or update the timer
+                //     if (zero_velocity_start_time == 0)
+                //     {
+                //         zero_velocity_start_time = pros::millis();
+                //     }
+                //     else if (pros::millis() - zero_velocity_start_time > 1000)
+                //     {
+                //         // If the motors have been at 0 velocity for more than 500 ms, activate dejam state
+                //         this->dejam_start_time = pros::millis();
+                //         this->pre_dejam_state = this->state == IntakeState::DEJAM ? IntakeState::DISABLED : this->state;
+                //         this->state = IntakeState::DEJAM;
+                //         zero_velocity_start_time = 0; // reset timer
+                //     }
+                // }
+                // else
+                // {
+                //     // If the motors are not at 0 velocity, reset the timer
+                //     zero_velocity_start_time = 0;
+                // }
 
                 // If jammed for a certain amount of time return to initial state
                 if (this->state == IntakeState::DEJAM && pros::millis() - this->dejam_start_time > 200)

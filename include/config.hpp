@@ -36,7 +36,7 @@ namespace config
     inline const char PORT_DOINKER_RIGHT = 'B';
     inline const char PORT_DOINKER_LEFT = 'G';
     inline const char PORT_INTAKE_LIFT = 'F'; 
-    inline const char PORT_CLAMP = 'A'; 
+    inline const char PORT_CLAMP = 'A';
 
     inline const mechanism::ArmTargetConfig ARM_TARGET_CONFIG = {
         load : 66.25,
@@ -44,6 +44,7 @@ namespace config
         prime : 140.0,
         neutral_stake : 470.0,
         alliance_stake : 390.0,
+        touch : 325.0
     };
     inline const PIDParameters PARAMS_ARM_PID = {
         kP : 1.2,
@@ -90,7 +91,7 @@ namespace config
     inline const int8_t PORT_RING_SORT_DISTANCE = 12;
 
     inline const int8_t PORT_CLAMP_DISTANCE = 21;
-    inline const double AUTOCLAMP_THRESHOLD = 35;
+    inline const double AUTOCLAMP_THRESHOLD = 42;
 
     inline const double SORT_DISTANCE = 40;
     inline const double RED_BOUND = 35;

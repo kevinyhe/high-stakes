@@ -81,7 +81,7 @@ void disabled()
 }
 void autonomous()
 {
-	blue_awp();
+	red_awp();
 	// red_mogo();
 
 	// auto &auton_selector = AutonSelector::get_instance();
