@@ -2,7 +2,7 @@
 #include "config.hpp"
 #include "main.h"
 
-void red_awp_safe()
+void red_awp()
 {
     chassis->setPose(-61.5, 13.6, 212.0);
     auto &arm = mechanism::Arm::get_instance();
@@ -48,7 +48,7 @@ void red_awp_safe()
 
     // corner
     chassis->moveToPoint(-58.79, 58.278, 2000, {.minSpeed = 127, .earlyExitRange = 12});
-    chassis->waitUntil(18);
+    chassis->waitUntil(12);
     doinker_right.retract();
     chassis->moveToPoint(-72.79, 72.278, 600, {.minSpeed = 127});
 
@@ -64,13 +64,14 @@ void red_awp_safe()
     intake_lift.extend();
     pros::delay(300);
     clamp.retract();
+    doinker_left.retract();
     chassis->waitUntil(20);
     intake_lift.retract();
     chassis->cancelMotion();
 
     // clamp
-    chassis->turnToPoint(-24, -17.5, 2000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .minSpeed = 60, .earlyExitRange = 60});
-    chassis->moveToPoint(-24, -17.5, 2000, {.forwards = false});
+    chassis->turnToPoint(-24, -21.5, 2000, {.forwards = false, .direction = lemlib::AngularDirection::CW_CLOCKWISE, .minSpeed = 60, .earlyExitRange = 60});
+    chassis->moveToPoint(-24, -21.5, 2000, {.forwards = false});
     chassis->waitUntil(12);
     intake.disable_stop_next_ring();
     clamp.set_autoclamp(true);
@@ -94,7 +95,7 @@ void red_awp_safe()
     chassis->moveToPoint(-24, -48, 2000, {.minSpeed = 127, .earlyExitRange = 5});
     arm.set_state(mechanism::ArmState::PRIME);
     chassis->moveToPoint(-36, -40.5, 2000, {.forwards = false, .minSpeed = 127, .earlyExitRange = 8});
-    chassis->moveToPoint(-22, -18, 2000, {.minSpeed = 60});
+    chassis->moveToPose(-24, -20, 45, 2000, {.minSpeed = 60});
     chassis->waitUntilDone();
     arm.set_state(mechanism::ArmState::ALLIANCE_STAKE);
 }

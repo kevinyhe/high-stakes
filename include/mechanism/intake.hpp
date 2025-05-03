@@ -9,6 +9,7 @@ namespace mechanism
     enum class IntakeState
     {
         DISABLED,
+        SORT,
         HOOK,
         FIRST_HOOK,
         SECOND_HOOK,
@@ -46,9 +47,11 @@ namespace mechanism
 
         IntakeState state = IntakeState::DISABLED;
         double dejam_start_time = 0;
+        double sort_start_time = 0;
         double zero_velocity_start_time = 0;
         double wall_stake_start_time = 0;
         IntakeState pre_dejam_state = IntakeState::DISABLED;
+        IntakeState pre_sort_state = IntakeState::DISABLED;
         pros::Mutex mutex;
         bool task_on_flag = false;
         pros::Task task = pros::Task([]()

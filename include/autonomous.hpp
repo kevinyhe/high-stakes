@@ -6,8 +6,8 @@ void red_mogo();
 void blue_mogo();
 void red_ring();
 void blue_ring();
-void red_awp_safe();
-void blue_awp_safe();
+void red_awp();
+void blue_awp();
 void prog_skills();
 void findTrackingCenter(int turnVoltage, uint32_t time);
 
@@ -18,8 +18,8 @@ public:
     {
         RED_MOGO,
         BLUE_MOGO,
-        RED_AWP_SAFE,
-        BLUE_AWP_SAFE,
+        RED_AWP,
+        BLUE_AWP,
         PROG_SKILLS,
         DEFAULT
     };
@@ -45,10 +45,10 @@ public:
         case AutonRoutine::BLUE_MOGO:
             blue_mogo();
             break;
-        case AutonRoutine::RED_AWP_SAFE:
-            red_awp_safe();
+        case AutonRoutine::RED_AWP:
+            red_awp();
             break;
-        case AutonRoutine::BLUE_AWP_SAFE:
+        case AutonRoutine::BLUE_AWP:
             blue_ring();
             break;
         case AutonRoutine::PROG_SKILLS:
@@ -68,4 +68,3 @@ private:
     AutonSelector(const AutonSelector &) = delete;
     AutonSelector &operator=(const AutonSelector &) = delete;
 };
-

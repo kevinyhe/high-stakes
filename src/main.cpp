@@ -12,7 +12,7 @@ void initialize()
 {
 	chassis->calibrate(); // calibrate sensors
 	mock_IMU.tare();
-	
+
 	pros::lcd::initialize();
 
 	vertical_rotation.set_data_rate(5);
@@ -20,16 +20,16 @@ void initialize()
 	mock_IMU.set_data_rate(5);
 	vertical_rotation.set_position(0);
 	lateral_rotation.set_position(0);
-
+	
 	auto intake_motor = std::make_shared<pros::Motor>(config::PORT_INTAKE);
 	auto intake_optical = std::make_shared<pros::Optical>(config::PORT_RING_SORT_OPTICAL);
 	auto intake_distance = std::make_shared<pros::Distance>(config::PORT_RING_SORT_DISTANCE);
 
 	mechanism::Intake::initialize(intake_motor, intake_optical, intake_distance, config::SORT_DISTANCE, config::RED_BOUND, config::BLUE_BOUND);
-	
+
 	auto arm_motors = std::make_shared<pros::MotorGroup>(config::PORT_ARM);
 	auto arm_rotation = std::make_shared<pros::Rotation>(config::PORT_ARM_ROTATION);
-		
+
 	arm_motors->set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
 	mechanism::Arm::initialize(
@@ -45,7 +45,6 @@ void initialize()
 		config::AUTOCLAMP_THRESHOLD);
 
 	// arm_rotation->reset();
-
 
 	// pros::Task t_UKFTask(UKFTask, nullptr, "UKFTask");
 
@@ -69,8 +68,7 @@ void initialize()
 			// std::cout.flush();
 			
 			pros::delay(50);
-		}
-	});
+		} });
 }
 
 /**
@@ -78,13 +76,13 @@ void initialize()
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {
-	
+void disabled()
+{
 }
 void autonomous()
 {
-	// red_awp_safe();
-	red_mogo();
+	blue_awp();
+	// red_mogo();
 
 	// auto &auton_selector = AutonSelector::get_instance();
 	// auton_selector.run_selected_routine();
@@ -101,7 +99,8 @@ void autonomous()
  */
 int prev_pot_range = 0;
 
-void competition_initialize() {
+void competition_initialize()
+{
 	int prev_pot_range = 0;
 
 	while (pros::competition::is_disabled())
@@ -132,11 +131,11 @@ void competition_initialize() {
 			break;
 		case 2:
 			controller.print(0, 0, "Red Ring   ");
-			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::RED_AWP_SAFE);
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::RED_AWP);
 			break;
 		case 3:
 			controller.print(0, 0, "Blue Ring  ");
-			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::BLUE_AWP_SAFE);
+			auton_selector.set_auton_routine(AutonSelector::AutonRoutine::BLUE_AWP);
 			break;
 		case 4:
 			controller.print(0, 0, "Prog Skills");

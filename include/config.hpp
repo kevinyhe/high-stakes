@@ -87,14 +87,14 @@ namespace config
     inline const double ANGULAR_SLEW = 0.0; 
 
     inline const int8_t PORT_RING_SORT_OPTICAL = 14;
-    inline const int8_t PORT_RING_SORT_DISTANCE = 0;
+    inline const int8_t PORT_RING_SORT_DISTANCE = 12;
 
-    inline const int8_t PORT_CLAMP_DISTANCE = 12;
+    inline const int8_t PORT_CLAMP_DISTANCE = 21;
     inline const double AUTOCLAMP_THRESHOLD = 35;
 
-    inline const double SORT_DISTANCE = 30;
+    inline const double SORT_DISTANCE = 40;
     inline const double RED_BOUND = 35;
-    inline const double BLUE_BOUND = 160;
+    inline const double BLUE_BOUND = 200;
 } // namespace config
 
 inline pros::MotorGroup left_motors = pros::MotorGroup(config::PORT_LEFT_DRIVE, pros::MotorGearset::blue);

@@ -93,7 +93,7 @@ namespace mechanism
                     double output = arm_pid->calculate(current_angle, target_angle);
                     // if (output < 50) {
                         motors->move(output + (kG * cos((current_angle-50) * M_PI / 180.0)));
-                        pros::lcd::print(5, "output: %f", kG * cos((current_angle-50) * M_PI / 180.0));
+                        // pros::lcd::print(5, "output: %f", kG * cos((current_angle-50) * M_PI / 180.0));
                         // motors->move(output);
                         // } else {
                         // motors->move(127);
